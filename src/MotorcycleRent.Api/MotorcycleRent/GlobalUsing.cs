@@ -1,0 +1,15 @@
+﻿global using Microsoft.IO;
+global using Microsoft.AspNetCore.Mvc;
+global using MotorcycleRent.Application.Services;
+global using MotorcycleRent.IoC.Injectors;
+global using MotorcycleRent.Api.Endpoints;
+global using Serilog;
+global using MotorcycleRent.Infrastructure.Services;
+global using Microsoft.AspNetCore.Diagnostics;
+global using MongoDB.Driver;
+global using System.Net;
+global using MotorcycleRent.Application.Exceptions;
+global using MotorcycleRent.Api.Middlewares;
+global using System.Text.Json.Serialization;
+global using MotorcycleRent.Application.Models.Dtos;
+global using static MotorcycleRent.Core.Constants;

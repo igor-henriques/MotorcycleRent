@@ -1,0 +1,10 @@
+﻿global using MotorcycleRent.Domain.Models.Enums;
+global using MotorcycleRent.Domain.Exceptions;
+global using System.Text.Json.Serialization;
+global using MotorcycleRent.Domain.Models;
+global using MotorcycleRent.Domain.Entities;
+global using System.Linq.Expressions;
+global using System.Security.Claims;
+global using MongoDB.Bson;
+global using MongoDB.Bson.Serialization.Attributes;
+global using MongoDB.Driver;
