@@ -47,6 +47,7 @@ try
     app.ConfigureUserEndpoints();
     app.ConfigureRentEndpoints();
     app.ConfigureDriverLicenseEndpoints();
+    app.ConfigureOrderEndpoints();
 
     await SeedDatabaseAsync(app);
 

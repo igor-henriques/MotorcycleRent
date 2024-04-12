@@ -1,5 +1,8 @@
 ﻿namespace MotorcycleRent.Application.Services;
 
+/// <summary>
+/// Orchestrates motorcycle-related services including creation, updating, listing, and deleting of motorcycles.
+/// </summary>
 public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrator
 {
     private readonly IBaseRepository<Motorcycle> _motorcycleRepository;
@@ -18,6 +21,13 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
         _motorcycleRentRepository = motorcycleRentRepository;
     }
 
+    /// <summary>
+    /// Creates a new motorcycle asynchronously.
+    /// </summary>
+    /// <param name="motorcycleDto">The motorcycle DTO containing the data to create a new motorcycle.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <returns>The ID of the newly created motorcycle.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if there is a duplicate plate exception.</exception>
     public async Task<Guid> CreateMotorcycleAsync(MotorcycleDto motorcycleDto, CancellationToken cancellationToken = default)
     {
         var incomingMotorcycle = _mapper.Map<Motorcycle>(motorcycleDto);
@@ -51,6 +61,12 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
         }
     }
 
+    /// <summary>
+    /// Retrieves a list of motorcycles based on provided search criteria.
+    /// </summary>
+    /// <param name="criteria">The search criteria to filter motorcycles.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <returns>A list of motorcycle DTOs matching the criteria.</returns>
     public async Task<IEnumerable<MotorcycleDto>> ListMotorcyclesAsync(MotorcycleSearchCriteria criteria, CancellationToken cancellationToken = default)
     {
         var filter = Builders<Motorcycle>.Filter.Empty;
@@ -89,6 +105,12 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
         return filteredMotorcycles.Select(_mapper.Map<MotorcycleDto>);
     }
 
+    /// <summary>
+    /// Updates the plate number of an existing motorcycle.
+    /// </summary>
+    /// <param name="plateUpdateDto">The DTO containing the old and new plate numbers.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the motorcycle does not exist or the new plate already exists.</exception>
     public async Task UpdateMotorcyclePlateAsync(UpdateMotorcyclePlateDto plateUpdateDto, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate == plateUpdateDto.OldPlate, cancellationToken)
@@ -121,6 +143,12 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
             plateUpdateDto.NewPlate);
     }
 
+    /// <summary>
+    /// Updates the state of a motorcycle.
+    /// </summary>
+    /// <param name="plateUpdateDto">The DTO containing the motorcycle plate and the new state.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the motorcycle plate is invalid or an error occurs during the update.</exception>
     public async Task UpdateMotorcycleStateAsync(UpdateMotorcycleStateDto plateUpdateDto, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate!.Equals(plateUpdateDto.Plate, StringComparison.CurrentCultureIgnoreCase), cancellationToken)
@@ -135,6 +163,12 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
             plateUpdateDto.State);
     }
 
+    /// <summary>
+    /// Deletes a motorcycle by its plate number.
+    /// </summary>
+    /// <param name="motorcyclePlate">The plate number of the motorcycle to delete.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the motorcycle cannot be deleted due to existing rent records or other constraints.</exception>
     public async Task DeleteMotorcycleAsync(string motorcyclePlate, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate!.Equals(motorcyclePlate, StringComparison.CurrentCultureIgnoreCase), cancellationToken)

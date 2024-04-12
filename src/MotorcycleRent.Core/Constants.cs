@@ -55,6 +55,13 @@ public static class Constants
             public const string Create = $"{BaseRoute}/create";
             public const string Update = $"{BaseRoute}/update";
         }
+
+        public static class Order
+        {
+            private const string BaseRoute = "api/order";
+            public const string Create = $"{BaseRoute}/create";
+            public const string Update = $"{BaseRoute}/update";
+        }
     }
 
     public static class Messages

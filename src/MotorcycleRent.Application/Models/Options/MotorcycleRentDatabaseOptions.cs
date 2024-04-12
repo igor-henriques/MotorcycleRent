@@ -8,6 +8,7 @@ public sealed record MotorcycleRentDatabaseOptions
     public string? MotorcycleCollectionName { get; init; }
     public string? OrderCollectionName { get; init; }
     public string? MotorcycleRentCollectionName { get; init; }
+    public string? OrderNotificationCollectionName { get; init; }
 
     public string? GetCollectionName<TEntity>()
     {
@@ -21,6 +22,7 @@ public sealed record MotorcycleRentDatabaseOptions
             nameof(Motorcycle) => MotorcycleCollectionName,
             nameof(Order) => OrderCollectionName,
             nameof(MotorcycleRent) => MotorcycleRentCollectionName,
+            nameof(OrderNotification) => OrderNotificationCollectionName,
             _ => throw new InvalidOperationException($"Object {entityName} do not have a matching collection")
         };
     }

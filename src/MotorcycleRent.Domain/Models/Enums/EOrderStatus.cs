@@ -1,6 +1,6 @@
 ﻿namespace MotorcycleRent.Domain.Models.Enums;
 
-public enum EDeliveryStatus
+public enum EOrderStatus
 {
     Available,
     Accepted,

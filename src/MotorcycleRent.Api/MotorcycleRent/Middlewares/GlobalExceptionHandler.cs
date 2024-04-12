@@ -22,7 +22,7 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             _logger.LogError(InternalServerErrorMessage, exception.Message);
         }
 
-        (HttpStatusCode statusCode, string problemDetails) = exception switch
+        (int statusCode, string details) = exception switch
         {
             InvalidOperationException or
             ValidationException or
@@ -30,19 +30,20 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             DateTimeInvalidRangeException or
             NoMotorcyclesAvailableException or
             OnGoingRentException or
-            PartnerUnableToRentException => (HttpStatusCode.BadRequest, exception.Message),
-            _ => (HttpStatusCode.InternalServerError, Messages.InternalServerErrorMessage)
+            PartnerUnableToRentException => (StatusCodes.Status400BadRequest, exception.Message),
+            _ => (StatusCodes.Status500InternalServerError, Messages.InternalServerErrorMessage)
         };
 
-        httpContext.Response.StatusCode = (int)statusCode;
+        httpContext.Response.StatusCode = statusCode;
 
-        var errorResponse = new
+        var problemDetail = new ProblemDetails
         {
-            Messages = problemDetails,
-            httpContext.Response.StatusCode
+            Status = statusCode,
+            Title = "Invalid Request",
+            Detail = details
         };
 
-        await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problemDetail, cancellationToken);
 
         return true;
     }

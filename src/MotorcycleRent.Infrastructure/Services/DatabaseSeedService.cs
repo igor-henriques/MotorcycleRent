@@ -2,13 +2,13 @@
 
 public sealed class DatabaseSeedService : IDatabaseSeedService
 {
-    private readonly UserSeedOptions _options;
+    private readonly SeedOptions _options;
     private readonly ILogger<DatabaseSeedService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IBaseRepository<User> _repo;
 
     public DatabaseSeedService(
-        IOptions<UserSeedOptions> options,
+        IOptions<SeedOptions> options,
         ILogger<DatabaseSeedService> logger,
         IServiceScopeFactory serviceScopeFactory,
         IBaseRepository<User> repo)
