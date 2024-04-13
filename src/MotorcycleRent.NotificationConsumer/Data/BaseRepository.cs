@@ -1,6 +1,6 @@
-﻿namespace MotorcycleRent.Infrastructure.Repositories;
+﻿namespace MotorcycleRent.NotificationConsumer.Data;
 
-public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
+internal sealed class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
 {
     private readonly IMongoCollection<TEntity> _collection;
 
@@ -74,5 +74,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<IEnumerable<TEntity>> GetAllAsync(FilterDefinition<TEntity> filterDefinition, CancellationToken cancellationToken = default)
     {
         return await _collection.Find(filterDefinition).ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> UpdateAsync(FilterDefinition<TEntity> entityFilter, UpdateDefinition<TEntity> entityUpdate, CancellationToken cancellationToken = default)
+    {
+        var result = await _collection.UpdateOneAsync(entityFilter, entityUpdate, cancellationToken: cancellationToken);
+        return result.IsAcknowledged;
     }
 }

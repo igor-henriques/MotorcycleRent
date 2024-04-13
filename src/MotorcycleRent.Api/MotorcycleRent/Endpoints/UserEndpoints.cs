@@ -6,13 +6,16 @@ public static class UserEndpoints
     {
         app.MapPost(Routes.User.CreateAdmin, CreateAdministrator)
            .WithTags(SwaggerTags.User)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.CreateAdministrator());
 
         app.MapPost(Routes.User.CreateDeliveryPartner, CreateDeliveryPartner)
-           .WithTags(SwaggerTags.User);
+           .WithTags(SwaggerTags.User)
+           .WithMetadata(SwaggerApiDescriber.CreateDeliveryPartner());
 
         app.MapPost(Routes.User.Authenticate, Authenticate)
-           .WithTags(SwaggerTags.User);
+           .WithTags(SwaggerTags.User)
+           .WithMetadata(SwaggerApiDescriber.Authenticate());
     }
 
     private static async Task<IResult> CreateAdministrator(

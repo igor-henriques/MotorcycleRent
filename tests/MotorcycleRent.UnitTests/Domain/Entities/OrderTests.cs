@@ -54,4 +54,63 @@ public sealed class OrderTests
         // Assert
         Assert.Equal(expected, CanUpdateStatus);
     }
+
+    [Fact]
+    public void CanBeAccepted_ReturnsTrue_WhenStatusIsAvailableAndPartnerCanAccept()
+    {
+        // Arrange        
+        var order = Order.CreateNewOrder(1, EOrderStatus.Available);
+        var partner = new DeliveryPartner() { IsAvailable = true, HasActiveRental = true };
+        partner.Notifications.Add(order);
+
+        // Act
+        bool result = order.CanBeAccepted(partner);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void CanBeAccepted_ReturnsFalse_WhenPartnerHasNoActiveRental()
+    {
+        // Arrange        
+        var order = Order.CreateNewOrder(1, EOrderStatus.Available);
+        var partner = new DeliveryPartner() { IsAvailable = true, HasActiveRental = false };
+        partner.Notifications.Add(order);
+
+        // Act
+        bool result = order.CanBeAccepted(partner);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CanBeAccepted_ReturnsFalse_WhenPartnerIsUnavailable()
+    {
+        // Arrange        
+        var order = Order.CreateNewOrder(1, EOrderStatus.Available);
+        var partner = new DeliveryPartner() { IsAvailable = false, HasActiveRental = true };
+        partner.Notifications.Add(order);
+
+        // Act
+        bool result = order.CanBeAccepted(partner);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CanBeAccepted_ReturnsFalse_WhenPartnerWasNotNotified()
+    {
+        // Arrange        
+        var order = Order.CreateNewOrder(1, EOrderStatus.Available);
+        var partner = new DeliveryPartner() { IsAvailable = true, HasActiveRental = true };        
+
+        // Act
+        bool result = order.CanBeAccepted(partner);
+
+        // Assert
+        Assert.False(result);
+    }
 }

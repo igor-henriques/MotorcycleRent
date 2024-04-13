@@ -4,7 +4,7 @@ public sealed record MotorcycleRental : BaseEntity
 {
     public DeliveryPartner? DeliveryPartner { get; init; }
     public Motorcycle? Motorcycle { get; init; }
-    public DateTimeRange RentPeriod { get; init; }
+    public DateTimeRange RentalPeriod { get; init; }
     public ERentalPlan RentalPlan { get; init; }
     public decimal RentalCost { get; init; }
     public decimal FeeCost { get; init; }    

@@ -30,7 +30,6 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
             }
 
             bool collectionHasData = await _repo.CountDocumentsAsync(new EstimatedDocumentCountOptions() { MaxTime = TimeSpan.FromMilliseconds(100) }) > 0;
-
             if (collectionHasData)
             {
                 _logger.LogInformation("Seed operation aborted because the collection is not empty");

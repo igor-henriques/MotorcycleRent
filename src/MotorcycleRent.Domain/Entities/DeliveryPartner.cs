@@ -8,6 +8,7 @@ public sealed record DeliveryPartner : User
     public DriverLicense? DriverLicense { get; init; }
     public List<Order> Notifications { get; init; } = [];
     public bool HasActiveRental { get; init; }
+    public bool IsAvailable { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the delivery partner is eligible to rent a vehicle.
@@ -32,5 +33,20 @@ public sealed record DeliveryPartner : User
         DriverLicense != null && 
         DriverLicense.DriverLicenseType is EDriverLicenseType.A or EDriverLicenseType.AB;
 
-    public bool CanOrderBeAccepted(Order order) => HasActiveRental && Notifications.Any(o => o.PublicOrderId == order.PublicOrderId);
+    /// <summary>
+    /// Determines whether the delivery partner can accept a specific order.
+    /// </summary>
+    /// <param name="order">The order to be potentially accepted by the delivery partner.</param>
+    /// <returns>
+    /// <c>true</c> if the delivery partner has an active rental, the order is already notified to the partner, and the partner is available;
+    /// otherwise, <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// This method checks three conditions for an order to be accepted by the delivery partner:
+    /// 1. The partner must have an active rental. This implies that the partner is engaged in active delivery tasks.
+    /// 2. The order must already be in the partner's notification list. This ensures that the partner is aware of the order and has previously been considered for it.
+    /// 3. The partner must be currently available to take new orders. Availability ensures that the partner can manage additional tasks.
+    /// If any of these conditions are not met, the order cannot be accepted by the partner.
+    /// </remarks>
+    public bool CanOrderBeAccepted(Order order) => HasActiveRental && Notifications.Any(o => o.PublicOrderId == order.PublicOrderId) && IsAvailable;
 }

@@ -8,7 +8,7 @@ public class BaseServiceBusPublisher<TMessage> : IPublisher<TMessage> where TMes
     private readonly ServiceBusClient _client;
     private readonly ServiceBusSender _sender;    
 
-    public BaseServiceBusPublisher(IOptions<ServiceBusOptions> options, ILogger<TMessage> logger)
+    public BaseServiceBusPublisher(IOptions<PublisherOptions> options, ILogger<TMessage> logger)
     {
         _connectionString = options.Value.ConnectionString!;
         _queueName = options.Value.QueueName!;

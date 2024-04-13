@@ -1,6 +1,6 @@
-@MotorcycleRental_HostAddress = http://localhost:5268
+@MotorcycleRental_HostAddress = https://localhost:7188
 
-GET {{MotorcycleRental_HostAddress}}/weatherforecast/
+GET {{MotorcycleRental_HostAddress}}/user/authenticate
 Accept: application/json
 
 ###

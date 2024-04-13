@@ -41,7 +41,7 @@ public sealed class DriverLicenseImageHandlerService : IDriverLicenseImageHandle
         var blobClient = new BlobClient(_options.ConnectionString, _options.ContainerName, blobName, _blobOptions);
 
         using var stream = driverLicenseDto.DriverLicenseImage.OpenReadStream();
-        await blobClient.UploadAsync(stream, cancellationToken);
+        await blobClient.UploadAsync(stream, overwrite: true, cancellationToken: cancellationToken);
 
         _logger.LogInformation("Driver license image successfully uploaded. Url: {DriverLicenseImageUrl}", blobClient.Uri.AbsoluteUri);
 

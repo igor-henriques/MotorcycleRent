@@ -4,6 +4,11 @@ public sealed class DriverLicenseDtoValidator : AbstractValidator<DriverLicenseD
 {
     public DriverLicenseDtoValidator(IOptions<DriverLicenseOptions> options)
     {
+        RuleFor(x => x.DriverLicenseImage)
+            .NotNull()
+            .WithMessage("A driver license image is required")
+            .SetValidator(new DriverLicenseImageValidator(options)!);
+
         RuleFor(x => x.DriverLicenseId)
             .NotEmpty()
             .Length(11);
@@ -11,8 +16,5 @@ public sealed class DriverLicenseDtoValidator : AbstractValidator<DriverLicenseD
         RuleFor(x => x.DriverLicenseType)
             .Must(x => x != EDriverLicenseType.Invalid)
             .WithMessage("Driver license must have category A included");
-
-        RuleFor(x => x.DriverLicenseImage)
-            .SetValidator(new DriverLicenseImageValidator(options)!);
     }
 }

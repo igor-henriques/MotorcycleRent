@@ -23,4 +23,5 @@ global using MotorcycleRent.Application.Exceptions;
 global using MotorcycleRent.Application.Providers;
 global using MotorcycleRent.Domain.Exceptions;
 global using System.Text.Json;
+global using MotorcycleRent.Domain.Services;
 global using InvalidOperationException = MotorcycleRent.Domain.Exceptions.InvalidOperationException;

@@ -6,19 +6,23 @@ public static class OrderEndpoints
     {
         app.MapPost(Routes.Order.Create, CreateOrder)
            .WithTags(SwaggerTags.Order)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.CreateOrder());
 
         app.MapGet(Routes.Order.NotifiedPartners, GetNotifiedPartners)
            .WithTags(SwaggerTags.Order)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.GetNotifiedPartners());
 
         app.MapGet(Routes.Order.CheckAvailability, CheckOrderAvailability)
            .WithTags(SwaggerTags.Order)
-           .RequireAuthorization(Roles.DeliveryPartner);
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.CheckOrderAvailability());
 
         app.MapPatch(Routes.Order.UpdateStatus, UpdateOrderStatus)
            .WithTags(SwaggerTags.Order)
-           .RequireAuthorization(Roles.DeliveryPartner);          
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.UpdateOrderStatus());
     }
 
     private static async Task<IResult> CreateOrder(

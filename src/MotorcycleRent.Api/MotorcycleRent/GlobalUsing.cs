@@ -10,4 +10,6 @@ global using MotorcycleRent.Infrastructure.Services;
 global using MotorcycleRent.IoC.Injectors;
 global using Serilog;
 global using System.Text.Json.Serialization;
+global using Swashbuckle.AspNetCore.Annotations;
+global using MotorcycleRent.Api.Swagger;
 global using static MotorcycleRent.Core.Constants;

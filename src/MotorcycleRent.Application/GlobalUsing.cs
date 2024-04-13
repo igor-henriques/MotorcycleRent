@@ -21,4 +21,5 @@ global using System.Reflection;
 global using System.Security.Claims;
 global using System.Diagnostics.CodeAnalysis;
 global using MotorcycleRent.Core;
+global using MotorcycleRent.Domain.Services;
 global using InvalidOperationException = MotorcycleRent.Domain.Exceptions.InvalidOperationException;

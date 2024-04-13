@@ -7,12 +7,15 @@ public static class DriverLicenseEndpoints
         app.MapPost(Routes.DriverLicense.Create, CreateDriverLicense)
            .WithTags(SwaggerTags.DriverLicense)
            .Accepts<DriverLicenseDto>("multipart/form-data")
-           .RequireAuthorization(Roles.DeliveryPartner);
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.CreateDriverLicense());
 
         app.MapPatch(Routes.DriverLicense.Update, UpdateDriverLicense)
            .WithTags(SwaggerTags.DriverLicense)
            .Accepts<DriverLicenseDto>("multipart/form-data")
-           .RequireAuthorization(Roles.DeliveryPartner); ;
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.UpdateDriverLicense());
+        
     }
 
     private static async Task<IResult> CreateDriverLicense(

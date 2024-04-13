@@ -4,12 +4,9 @@ public sealed class DriverLicenseImageValidator : AbstractValidator<IFormFile>
 {
     public DriverLicenseImageValidator(IOptions<DriverLicenseOptions> options)
     {
-        RuleFor(x => x)
-            .NotNull()
-            .WithMessage("A driver license image is required");
-
         RuleFor(x => x.Length)
-            .LessThanOrEqualTo(options.Value.MaxBytesSize);
+            .LessThanOrEqualTo(options.Value.MaxBytesSize)
+            .WithMessage($"Image max size is {options.Value.MaxMbSize}MB");
 
         RuleFor(x => x.ContentType)
             .NotEmpty()

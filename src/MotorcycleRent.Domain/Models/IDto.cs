@@ -1,4 +1,4 @@
-﻿namespace MotorcycleRent.Domain.Interfaces;
+﻿namespace MotorcycleRent.Domain.Models;
 
 /// <summary>
 /// Empty interface to mark DTO classes. Required to create validation proxies.

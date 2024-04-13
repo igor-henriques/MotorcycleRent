@@ -46,7 +46,7 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
 
         if (onGoingRental is not null)
         {
-            throw new OnGoingRentalException(onGoingRental.RentPeriod);
+            throw new OnGoingRentalException(onGoingRental.RentalPeriod);
         }
 
         var selectedMotorcycle = await SelectAvailableMotorcycleAsync(MotorcycleRentalDto, cancellationToken);
@@ -78,7 +78,7 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
         {
             FeeCost = rentMotorcycleTask.Result!.FeeCost,
             RentalBaseCost = rentMotorcycleTask.Result!.RentalCost,
-            RentPeriod = rentMotorcycleTask.Result!.RentPeriod
+            RentPeriod = rentMotorcycleTask.Result!.RentalPeriod
         };
 
         return rentalPrice;

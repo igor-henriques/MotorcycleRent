@@ -120,7 +120,7 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
 
         if (rent is not null)
         {
-            throw new OnGoingRentalException(rent.RentPeriod, rent.Motorcycle!.Plate!);
+            throw new OnGoingRentalException(rent.RentalPeriod, rent.Motorcycle!.Plate!);
         }
 
         try

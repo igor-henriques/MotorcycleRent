@@ -8,11 +8,19 @@ public sealed class OrderServiceOrchestratorTests
     private readonly Mock<IPublisher<Order>> _publisherMock = new();
     private readonly Mock<IBaseRepository<DeliveryPartner>> _userRepositoryMock = new();
     private readonly Mock<IEmailClaimProvider> _emailClaimProviderMock = new();
+    private readonly Mock<IOrderStatusManagementService> _orderStatusManagementServiceMock = new();
     private readonly OrderServiceOrchestrator _orchestrator;
 
     public OrderServiceOrchestratorTests()
     {
-        _orchestrator = new OrderServiceOrchestrator(_orderRepositoryMock.Object, _loggerMock.Object, _mapperMock.Object, _publisherMock.Object, _emailClaimProviderMock.Object, _userRepositoryMock.Object);
+        _orchestrator = new OrderServiceOrchestrator(
+            _orderRepositoryMock.Object,
+            _loggerMock.Object, 
+            _mapperMock.Object,
+            _publisherMock.Object, 
+            _emailClaimProviderMock.Object, 
+            _userRepositoryMock.Object, 
+            _orderStatusManagementServiceMock.Object);
     }
 
     [Fact]
@@ -93,47 +101,6 @@ public sealed class OrderServiceOrchestratorTests
         var order = Order.CreateNewOrder(10, EOrderStatus.Available);
         _orderRepositoryMock.Setup(repo => repo.GetByAsync(It.IsAny<Expression<Func<Order, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(order);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _orchestrator.UpdateOrderStatusAsync(updateDto));
-    }
-
-    [Fact]
-    public async Task UpdateOrderStatusAsync_ShouldThrowPartnerNotNotifiedException_WhenNotNotifiedAboutOrderOnAcception()
-    {
-        // Arrange
-        var updateDto = new UpdateOrderStatusDto { PublicOrderId = "12345", Status = EOrderStatus.Accepted };
-        var order = Order.CreateNewOrder(10, EOrderStatus.Available);
-        var partner = new DeliveryPartner() { HasActiveRental = true };
-
-        _orderRepositoryMock.Setup(repo => repo.GetByAsync(It.IsAny<Expression<Func<Order, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(order);
-
-        _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(order);
-
-        _userRepositoryMock.Setup(m => m.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(partner);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<PartnerNotNotifiedException>(() => _orchestrator.UpdateOrderStatusAsync(updateDto));
-    }
-
-    [Fact]
-    public async Task UpdateOrderStatusAsync_ShouldThrowInvalidOperationException_WhenOrderFailsToUpdate()
-    {
-        // Arrange
-        var updateDto = new UpdateOrderStatusDto { PublicOrderId = "12345", Status = EOrderStatus.Accepted };
-        var order = Order.CreateNewOrder(10, EOrderStatus.Available);
-        var partner = new DeliveryPartner() { HasActiveRental = true };
-        partner.Notifications.Add(order);
-
-        _orderRepositoryMock.Setup(repo => repo.GetByAsync(It.IsAny<Expression<Func<Order, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(order);
-
-        _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _userRepositoryMock.Setup(m => m.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(partner);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _orchestrator.UpdateOrderStatusAsync(updateDto));

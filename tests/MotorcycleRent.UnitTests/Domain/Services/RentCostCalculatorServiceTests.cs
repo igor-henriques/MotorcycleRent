@@ -35,7 +35,7 @@ public sealed class RentCostCalculatorServiceTests
         int earlyReturnDaysCount = 2;
         var MotorcycleRental = new MotorcycleRental()
         {
-            RentPeriod = new DateTimeRange(
+            RentalPeriod = new DateTimeRange(
                 DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
@@ -56,7 +56,7 @@ public sealed class RentCostCalculatorServiceTests
         int lateReturnDaysCount = 2;
         var motorcycleRental = new MotorcycleRental()
         {
-            RentPeriod = new DateTimeRange(
+            RentalPeriod = new DateTimeRange(
                 DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) - lateReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
@@ -77,7 +77,7 @@ public sealed class RentCostCalculatorServiceTests
         int earlyReturnDaysCount = 0;
         var motorcycleRental = new MotorcycleRental()
         {
-            RentPeriod = new DateTimeRange(
+            RentalPeriod = new DateTimeRange(
                 DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
@@ -97,7 +97,7 @@ public sealed class RentCostCalculatorServiceTests
         // Arrange        
         var motorcycleRental = new MotorcycleRental()
         {
-            RentPeriod = new DateTimeRange(
+            RentalPeriod = new DateTimeRange(
                 DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) * 2),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly

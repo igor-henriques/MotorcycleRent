@@ -1,4 +1,6 @@
-﻿namespace MotorcycleRent.IoC.Injectors;
+﻿using MotorcycleRent.Domain.Services;
+
+namespace MotorcycleRent.IoC.Injectors;
 
 public static class ConfigureServices
 {
@@ -35,6 +37,9 @@ public static class ConfigureServices
         services.AddSingleton<IRentalCostCalculatorService, WeeklyRentalCostCalculatorService>();
         services.AddSingleton<IRentalCostCalculatorService, BiweeklyRentalCostCalculatorService>();
         services.AddSingleton<IRentalCostCalculatorService, MonthlyRentalCostCalculatorService>();
+
+        services.AddScoped<IOrderStatusManagementService, OrderStatusManagementService>();
+
         return services;
     }
 

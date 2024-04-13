@@ -29,9 +29,8 @@ public abstract class BaseRentalCostCalculatorService
     public MotorcycleRental CalculateRentalCost(MotorcycleRental motorcycleRental)
     {
         decimal dailyCost = _options.GetDailyPlanCost(motorcycleRental.RentalPlan);
-        decimal days = Math.Round((decimal)motorcycleRental.RentPeriod.NumberOfDays());
-
-        int planRenovations = (int)Math.Floor(days / RentPeriodDays);
+        decimal days = Math.Round((decimal)motorcycleRental.RentalPeriod.NumberOfDays());
+        int planRenovations = GetPlanRenovations(days);
 
         decimal baseCost = GetBaseCost(dailyCost, planRenovations);
         decimal earlyReturnFee = GetEarlyReturnFee(motorcycleRental, planRenovations);
@@ -45,19 +44,26 @@ public abstract class BaseRentalCostCalculatorService
     }
 
     /// <summary>
+    /// Get the plan renovations based on the number of days in the rent period.
+    /// It should never be 0, as it'd affect the math for the base cost calculation and fees.
+    /// </summary>
+    /// <param name="days">Number of days</param>
+    /// <returns></returns>
+    private int GetPlanRenovations(decimal days)
+    {
+        var planRenovations = (int)Math.Floor(days / RentPeriodDays);
+        return planRenovations is 0 ? 1 : planRenovations;
+    }
+
+    /// <summary>
     /// Calculates the base rental cost based on the pre-defined daily cost and the plan renovations amount
     /// </summary>
     /// <param name="MotorcycleRental">The motorcycle rent information.</param>
     /// <param name="planRenovations">The number of plan renovations.</param>
     /// <returns>The late return fee amount.</returns>
-    public decimal GetBaseCost(decimal dailyCost, int planRenovations)
+    private decimal GetBaseCost(decimal dailyCost, int planRenovations)
     {
-        if (planRenovations > 0)
-        {
-            return Math.Round(planRenovations * RentPeriodDays * dailyCost, 2);
-        }
-
-        return Math.Round(RentPeriodDays * dailyCost, 2);
+        return Math.Round(planRenovations * RentPeriodDays * dailyCost, 2);
     }
 
     /// <summary>
@@ -68,9 +74,9 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns>The late return fee amount.</returns>
     private decimal GetLateReturnFee(MotorcycleRental MotorcycleRental, int planRenovations)
     {
-        var expectedReturnDate = MotorcycleRental.RentPeriod.Start.AddDays(RentPeriodDays * planRenovations);
-        var actualReturnDate = MotorcycleRental.RentPeriod.End;
-        var lateDays = Math.Round((actualReturnDate - expectedReturnDate).TotalDays);
+        var expectedReturnDate = MotorcycleRental.RentalPeriod.Start.AddDays(RentPeriodDays * planRenovations);
+        var actualReturnDate = MotorcycleRental.RentalPeriod.End;
+        var lateDays = Math.Max(0, Math.Round((actualReturnDate - expectedReturnDate).TotalDays));
 
         return (decimal)lateDays * _options.DailyExceededFee;
     }
@@ -83,10 +89,10 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns>The early return fee amount.</returns>
     private decimal GetEarlyReturnFee(MotorcycleRental motorcycleRental, int planRenovations)
     {
-        var expectedReturnDate = motorcycleRental.RentPeriod.Start.AddDays(RentPeriodDays * planRenovations);
-        var actualReturnDate = motorcycleRental.RentPeriod.End;
+        var expectedReturnDate = motorcycleRental.RentalPeriod.Start.AddDays(RentPeriodDays * planRenovations);
+        var actualReturnDate = motorcycleRental.RentalPeriod.End;
 
-        decimal days = (decimal)Math.Round((expectedReturnDate - actualReturnDate).TotalDays);
+        decimal days = Math.Max(0, (decimal)Math.Round((expectedReturnDate - actualReturnDate).TotalDays));
         decimal feePercentage = _options.GetEarlyReturnFeePercentage(motorcycleRental.RentalPlan);
 
         return days * _options.GetDailyPlanCost(motorcycleRental.RentalPlan) * feePercentage;

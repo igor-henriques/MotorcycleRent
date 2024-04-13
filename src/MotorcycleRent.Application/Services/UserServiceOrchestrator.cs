@@ -38,7 +38,7 @@ public sealed class UserServiceOrchestrator : IUserServiceOrchestrator
     {
         Administrator incomingAdministratorUser = _mapper.Map<Administrator>(administratorDto);
 
-        User? createdAdministratorUser = await _userRepository.CreateAsync(incomingAdministratorUser with
+        User? createdAdministratorUser = await _userRepository.CreateAsync((incomingAdministratorUser as User) with
         {
             Claims = [
                 new Claim(ClaimTypes.Role, nameof(Administrator)),

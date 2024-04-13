@@ -6,23 +6,28 @@ public static class MotorcycleEndpoints
     {
         app.MapPost(Routes.Motorcycle.Create, CreateMotorcycle)
            .WithTags(SwaggerTags.Motorcycle)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.CreateMotorcycle());
 
         app.MapGet(Routes.Motorcycle.List, ListMotorcycles)
            .WithTags(SwaggerTags.Motorcycle)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.ListMotorcycles());
 
         app.MapPatch(Routes.Motorcycle.UpdatePlate, UpdateMotorcyclePlate)
            .WithTags(SwaggerTags.Motorcycle)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.UpdateMotorcyclePlate());
 
         app.MapPatch(Routes.Motorcycle.UpdateStatus, UpdateMotorcycleStatus)
            .WithTags(SwaggerTags.Motorcycle)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.UpdateMotorcycleStatus());
 
         app.MapDelete(Routes.Motorcycle.Delete, DeleteMotorcycle)
            .WithTags(SwaggerTags.Motorcycle)
-           .RequireAuthorization(Roles.Administrator);
+           .RequireAuthorization(Roles.Administrator)
+           .WithMetadata(SwaggerApiDescriber.DeleteMotorcycle());
     }
 
     private static async Task<IResult> CreateMotorcycle(

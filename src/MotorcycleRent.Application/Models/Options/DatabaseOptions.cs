@@ -1,6 +1,6 @@
 ﻿namespace MotorcycleRent.Application.Models.Options;
 
-public sealed record MotorcycleRentalDatabaseOptions
+public sealed record DatabaseOptions
 {
     public string? ConnectionString { get; init; }
     public string? DatabaseName { get; init; }

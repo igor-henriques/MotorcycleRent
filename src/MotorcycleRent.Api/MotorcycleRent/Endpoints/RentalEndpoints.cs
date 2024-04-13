@@ -6,14 +6,17 @@ public static class RentalEndpoints
     {
         app.MapPost(Routes.Rental.Rent, RentMotorcycle)
            .WithTags(SwaggerTags.Rental)
-           .RequireAuthorization(Roles.DeliveryPartner);
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.RentMotorcycle());
 
         app.MapPost(Routes.Rental.PeekPrice, PeekRentalPrice)
-           .WithTags(SwaggerTags.Rental);
+           .WithTags(SwaggerTags.Rental)
+           .WithMetadata(SwaggerApiDescriber.PeekRentalPrice()); 
 
         app.MapPatch(Routes.Rental.Return, ReturnMotorcycleRental)
            .WithTags(SwaggerTags.Rental)
-           .RequireAuthorization(Roles.DeliveryPartner);
+           .RequireAuthorization(Roles.DeliveryPartner)
+           .WithMetadata(SwaggerApiDescriber.ReturnMotorcycleRental());
     }
 
     private static async Task<IResult> RentMotorcycle(

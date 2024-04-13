@@ -50,7 +50,7 @@ public sealed record RentalOptions
             throw new InvalidOperationException(Constants.Messages.InvalidRentalPlan);
         }
 
-        return earlyReturnFeePercentage / 100;
+        return (decimal)earlyReturnFeePercentage / (decimal)100;
     }
 
     public sealed record EarlyReturnFee

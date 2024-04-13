@@ -1,6 +1,6 @@
 ﻿namespace MotorcycleRent.NotificationConsumer.Models;
 
-public sealed record DriverLicense
+internal sealed record DriverLicense
 {
     public string? DriverLicenseId { get; init; }
     public string? DriverLicenseImageUrl { get; init; }

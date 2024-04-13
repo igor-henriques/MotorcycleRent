@@ -1,4 +1,6 @@
-﻿namespace MotorcycleRent.Api.Middlewares;
+﻿using FluentValidation;
+
+namespace MotorcycleRent.Api.Middlewares;
 
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
@@ -19,7 +21,7 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
         (int statusCode, string details) = exception switch
         {
-            DomainException => (StatusCodes.Status400BadRequest, exception.Message),
+            DomainException or ValidationException => (StatusCodes.Status400BadRequest, exception.Message),
             _ => (StatusCodes.Status500InternalServerError, Messages.InternalServerError)
         };
 

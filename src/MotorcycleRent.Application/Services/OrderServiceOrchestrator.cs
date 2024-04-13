@@ -16,13 +16,15 @@ public sealed class OrderServiceOrchestrator : IOrderServiceOrchestrator
     private readonly IMapper _mapper;
     private readonly IPublisher<Order> _orderPublisher;
     private readonly IEmailClaimProvider _emailClaimProvider;
+    private readonly IOrderStatusManagementService _orderStatusManagementService;
 
     public OrderServiceOrchestrator(IBaseRepository<Order> repository,
                                     ILogger<OrderServiceOrchestrator> logger,
                                     IMapper mapper,
                                     IPublisher<Order> orderPublisher,
                                     IEmailClaimProvider emailClaimProvider,
-                                    IBaseRepository<DeliveryPartner> userRepository)
+                                    IBaseRepository<DeliveryPartner> userRepository,
+                                    IOrderStatusManagementService orderStatusManagementService)
     {
         _orderRepository = repository;
         _logger = logger;
@@ -30,6 +32,7 @@ public sealed class OrderServiceOrchestrator : IOrderServiceOrchestrator
         _orderPublisher = orderPublisher;
         _emailClaimProvider = emailClaimProvider;
         _deliveryPartnerRepository = userRepository;
+        _orderStatusManagementService = orderStatusManagementService;
     }
 
     /// <summary>
@@ -103,38 +106,15 @@ public sealed class OrderServiceOrchestrator : IOrderServiceOrchestrator
         var deliveryPartner = await _deliveryPartnerRepository.GetByAsync(u => u.Email == deliveryPartnerEmail, cancellationToken)
             ?? throw new InvalidOperationException(Constants.Messages.InvalidOrderUpdate);
 
-        if (!order.CanUpdateStatus(updateOrderStatus.Status))
-        {
-            _logger.LogWarning("Order {OrderPublicId} cannot perform update from status {CurrentOrderStatus} to {NewOrderStatus}",
-                order.PublicOrderId,
-                order.Status,
-                updateOrderStatus.Status);
+        (var incomingUpdatedOrder, var incomingUpdatedDeliveryPartner) = _orderStatusManagementService.HandleOrderStatusUpdate(order, deliveryPartner, updateOrderStatus.Status);
 
-            throw new InvalidOperationException(Constants.Messages.ForbiddenOrderUpdate);
-        }
-
-        if (!order.CanBeAccepted(deliveryPartner))
-        {
-            throw new PartnerNotNotifiedException();
-        }
-
-        var incomingUpdatedDeliveryPartner = order.IsOrderAvailableOnPartnerWithdrawal(updateOrderStatus.Status)
-            ? null
-            : deliveryPartner;
-
-        if (incomingUpdatedDeliveryPartner == null)
-        {
-            _logger.LogInformation("Order returning to Available status due to partner withdrawal");
-        }
-
-        var incomingUpdatedOrder = order with
-        {
-            Status = updateOrderStatus.Status,
-            DeliveryPartner = incomingUpdatedDeliveryPartner
-        };
-
-        _ = await _orderRepository.UpdateAsync(incomingUpdatedOrder, cancellationToken)
+        var partnerUpdateTask = _deliveryPartnerRepository.UpdateAsync(incomingUpdatedDeliveryPartner, cancellationToken)
             ?? throw new InvalidOperationException(Constants.Messages.InvalidOrderUpdate);
+
+        var orderUpdateTask = _orderRepository.UpdateAsync(incomingUpdatedOrder, cancellationToken)
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidOrderUpdate);
+
+        await Task.WhenAll(partnerUpdateTask, orderUpdateTask);
 
         _logger.LogInformation("Order {OrderPublicId} successfully updated from {OldOrderStatus} to {NewOrderStatus}",
             order.PublicOrderId,
