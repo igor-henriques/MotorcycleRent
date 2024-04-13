@@ -11,7 +11,7 @@ public static class ConfigureRepositories
 
     private static MongoClient GetMongoClient(IServiceProvider serviceProvider)
     {
-        var options = serviceProvider.GetRequiredService<IOptions<MotorcycleRentDatabaseOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptions<MotorcycleRentalDatabaseOptions>>();
         return new MongoClient(options.Value.ConnectionString);
     }
 }

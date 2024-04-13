@@ -16,7 +16,7 @@ public static class MotorcycleEndpoints
            .WithTags(SwaggerTags.Motorcycle)
            .RequireAuthorization(Roles.Administrator);
 
-        app.MapPatch(Routes.Motorcycle.UpdateState, UpdateMotorcycleState)
+        app.MapPatch(Routes.Motorcycle.UpdateStatus, UpdateMotorcycleStatus)
            .WithTags(SwaggerTags.Motorcycle)
            .RequireAuthorization(Roles.Administrator);
 
@@ -52,12 +52,12 @@ public static class MotorcycleEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> UpdateMotorcycleState(
+    private static async Task<IResult> UpdateMotorcycleStatus(
         [FromServices] IMotorcycleServiceOrchestrator service,
-        [FromBody] UpdateMotorcycleStateDto stateUpdateDto,
+        [FromBody] UpdateMotorcycleStatusDto statusUpdateDto,
         CancellationToken cancellationToken)
     {
-        await service.UpdateMotorcycleStateAsync(stateUpdateDto, cancellationToken);
+        await service.UpdateMotorcycleStatusAsync(statusUpdateDto, cancellationToken);
         return Results.NoContent();
     }
 

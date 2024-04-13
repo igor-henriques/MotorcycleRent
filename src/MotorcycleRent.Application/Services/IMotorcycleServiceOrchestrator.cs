@@ -39,10 +39,10 @@ public interface IMotorcycleServiceOrchestrator
     Task DeleteMotorcycleAsync(string motorcyclePlate, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Updates the state of a motorcycle.
+    /// Updates the status of a motorcycle.
     /// </summary>
-    /// <param name="plateUpdateDto">The DTO containing the motorcycle plate and the new state.</param>
+    /// <param name="plateUpdateDto">The DTO containing the motorcycle plate and the new status.</param>
     /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
     /// <exception cref="InvalidOperationException">Thrown if the motorcycle plate is invalid or an error occurs during the update.</exception>
-    Task UpdateMotorcycleStateAsync(UpdateMotorcycleStateDto plateUpdateDto, CancellationToken cancellationToken = default);
+    Task UpdateMotorcycleStatusAsync(UpdateMotorcycleStatusDto plateUpdateDto, CancellationToken cancellationToken = default);
 }

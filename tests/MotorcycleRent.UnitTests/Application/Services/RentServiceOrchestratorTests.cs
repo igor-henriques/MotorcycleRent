@@ -3,18 +3,18 @@
 public sealed class RentServiceOrchestratorTests
 {
     private readonly Mock<IBaseRepository<DeliveryPartner>> _userRepositoryMock = new();
-    private readonly Mock<IBaseRepository<MotorcycleRent.Domain.Entities.MotorcycleRent>> _rentRepositoryMock = new();
+    private readonly Mock<IBaseRepository<MotorcycleRental>> _rentRepositoryMock = new();
     private readonly Mock<IEmailClaimProvider> _emailClaimProviderMock = new();
-    private readonly Mock<ILogger<RentServiceOrchestrator>> _loggerMock = new();
+    private readonly Mock<ILogger<RentalServiceOrchestrator>> _loggerMock = new();
     private readonly Mock<IMapper> _mapperMock = new();
     private readonly Mock<IMotorcycleServiceOrchestrator> _motorcycleServiceOrchestratorMock = new();
-    private readonly Mock<IRentCostCalculatorService> _weeklyRentCostCalculatorServiceMock = new();
+    private readonly Mock<IRentalCostCalculatorService> _weeklyRentCostCalculatorServiceMock = new();
 
-    private readonly RentServiceOrchestrator _orchestrator;
+    private readonly RentalServiceOrchestrator _orchestrator;
 
     public RentServiceOrchestratorTests()
     {
-        _orchestrator = new RentServiceOrchestrator(
+        _orchestrator = new RentalServiceOrchestrator(
             _userRepositoryMock.Object,
             _rentRepositoryMock.Object,
             _loggerMock.Object,
@@ -25,10 +25,10 @@ public sealed class RentServiceOrchestratorTests
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsOnGoingRentException_WhenRentIsActive()
+    public async Task RentMotorcycleAsync_ThrowsOnGoingRentException_WhenRentIsActive()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto();
+        var MotorcycleRentalDto = new MotorcycleRentalDto();
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -36,18 +36,18 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync(new MotorcycleRent.Domain.Entities.MotorcycleRent { RentStatus = ERentStatus.Ongoing });
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync(new MotorcycleRental { Status = ERentStatus.Ongoing });
 
         // Act & Assert
-        await Assert.ThrowsAsync<OnGoingRentException>(() => _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
+        await Assert.ThrowsAsync<OnGoingRentalException>(() => _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsPartnerUnableToRentException_WhenInvalidDriverLicense()
+    public async Task RentMotorcycleAsync_ThrowsPartnerUnableToRentException_WhenInvalidDriverLicense()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto();
+        var MotorcycleRentalDto = new MotorcycleRentalDto();
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.Invalid } };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -55,18 +55,18 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync(new MotorcycleRent.Domain.Entities.MotorcycleRent { RentStatus = ERentStatus.Ongoing });
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync(new MotorcycleRental { Status = ERentStatus.Ongoing });
 
         // Act & Assert
-        await Assert.ThrowsAsync<PartnerUnableToRentException>(() => _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
+        await Assert.ThrowsAsync<PartnerUnableToRentException>(() => _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsInternalErrorException_WhenPartnerNotFound()
+    public async Task RentMotorcycleAsync_ThrowsInternalErrorException_WhenPartnerNotFound()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto();
+        var MotorcycleRentalDto = new MotorcycleRentalDto();
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.Invalid } };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -75,14 +75,14 @@ public sealed class RentServiceOrchestratorTests
                            .ReturnsAsync((DeliveryPartner?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InternalErrorException>(() => _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
+        await Assert.ThrowsAsync<InternalErrorException>(() => _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsNoMotorcyclesAvailableException_WhenNoMotorcyclesAvailable()
+    public async Task RentMotorcycleAsync_ThrowsNoMotorcyclesAvailableException_WhenNoMotorcyclesAvailable()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto();
+        var MotorcycleRentalDto = new MotorcycleRentalDto();
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -90,26 +90,26 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync((MotorcycleRent.Domain.Entities.MotorcycleRent?)null);
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync((MotorcycleRental?)null);
 
         _motorcycleServiceOrchestratorMock.Setup(m => m.ListMotorcyclesAsync(It.IsAny<MotorcycleSearchCriteria>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NoMotorcyclesAvailableException>(() => _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
+        await Assert.ThrowsAsync<NoMotorcyclesAvailableException>(() => _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_CreatesRent_WhenNoActiveRents()
+    public async Task RentMotorcycleAsync_CreatesRent_WhenNoActiveRents()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto { RentPeriod = new DateTimeRange(DateTime.Now, DateTime.Now.AddDays(7)) };
+        var MotorcycleRentalDto = new MotorcycleRentalDto { RentalPeriod = new DateTimeRange(DateTime.UtcNow, DateTime.UtcNow.AddDays(7)) };
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
         var motorcycle = new Motorcycle { Id = Guid.NewGuid(), Plate = "123ABC" };
-        MotorcycleRent.Domain.Entities.MotorcycleRent expectedRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        MotorcycleRental expectedRent = new()
         {
             FeeCost = 0,
-            RentCost = 100
+            RentalCost = 100
         };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -117,42 +117,42 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync((MotorcycleRent.Domain.Entities.MotorcycleRent?)null);  // No ongoing rent
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync((MotorcycleRental?)null);  // No ongoing rent
 
         _motorcycleServiceOrchestratorMock.Setup(m => m.ListMotorcyclesAsync(It.IsAny<MotorcycleSearchCriteria>(), It.IsAny<CancellationToken>()))
-                                          .ReturnsAsync(new List<MotorcycleDto> { new MotorcycleDto { Id = motorcycle.Id, Plate = motorcycle.Plate } });
+                                          .ReturnsAsync(new List<MotorcycleDto> { new() { Id = motorcycle.Id, Plate = motorcycle.Plate } });
 
         _mapperMock.Setup(m => m.Map<Motorcycle>(It.IsAny<MotorcycleDto>())).Returns(motorcycle);
-        _mapperMock.Setup(m => m.Map<MotorcycleRent.Domain.Entities.MotorcycleRent>(It.IsAny<MotorcycleRentDto>())).Returns(new MotorcycleRent.Domain.Entities.MotorcycleRent());
+        _mapperMock.Setup(m => m.Map<MotorcycleRental>(It.IsAny<MotorcycleRentalDto>())).Returns(new MotorcycleRental());
 
-        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()))
+        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(expectedRent with { Id = new Guid()});
 
-        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CanCalculate(It.IsAny<ERentPlan>())).Returns(true);
-        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CalculateRentCost(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>())).Returns(expectedRent);
+        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CanCalculate(It.IsAny<ERentalPlan>())).Returns(true);
+        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CalculateRentalCost(It.IsAny<MotorcycleRental>())).Returns(expectedRent);
 
         // Act
-        var result = await _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto);
+        var result = await _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto);
 
         // Assert        
         Assert.NotNull(result);
         Assert.Equal(expectedRent.FeeCost, result.FeeCost);
-        Assert.Equal(expectedRent.RentCost, result.RentCost);
-        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Equal(expectedRent.RentalCost, result.RentalBaseCost);
+        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsEntityCreationException_WhenDatabaseAddingFails()
+    public async Task RentMotorcycleAsync_ThrowsEntityCreationException_WhenDatabaseAddingFails()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto { RentPeriod = new DateTimeRange(DateTime.Now, DateTime.Now.AddDays(7)) };
+        var MotorcycleRentalDto = new MotorcycleRentalDto { RentalPeriod = new DateTimeRange(DateTime.Now, DateTime.Now.AddDays(7)) };
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
         var motorcycle = new Motorcycle { Id = Guid.NewGuid(), Plate = "123ABC" };
-        MotorcycleRent.Domain.Entities.MotorcycleRent expectedRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        MotorcycleRental expectedRent = new()
         {
             FeeCost = 0,
-            RentCost = 100
+            RentalCost = 100
         };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -160,37 +160,37 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync((MotorcycleRent.Domain.Entities.MotorcycleRent?)null);  // No ongoing rent
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync((MotorcycleRental?)null);  // No ongoing rent
 
         _motorcycleServiceOrchestratorMock.Setup(m => m.ListMotorcyclesAsync(It.IsAny<MotorcycleSearchCriteria>(), It.IsAny<CancellationToken>()))
-                                          .ReturnsAsync(new List<MotorcycleDto> { new MotorcycleDto { Id = motorcycle.Id, Plate = motorcycle.Plate } });
+                                          .ReturnsAsync(new List<MotorcycleDto> { new() { Id = motorcycle.Id, Plate = motorcycle.Plate } });
 
         _mapperMock.Setup(m => m.Map<Motorcycle>(It.IsAny<MotorcycleDto>())).Returns(motorcycle);
-        _mapperMock.Setup(m => m.Map<MotorcycleRent.Domain.Entities.MotorcycleRent>(It.IsAny<MotorcycleRentDto>())).Returns(new MotorcycleRent.Domain.Entities.MotorcycleRent());
+        _mapperMock.Setup(m => m.Map<MotorcycleRental>(It.IsAny<MotorcycleRentalDto>())).Returns(new MotorcycleRental());
 
-        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()))
-                           .Returns(Task.FromResult((MotorcycleRent.Domain.Entities.MotorcycleRent?)null));
+        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()))
+                           .Returns(Task.FromResult((MotorcycleRental?)null));
 
-        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CanCalculate(It.IsAny<ERentPlan>())).Returns(true);
-        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CalculateRentCost(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>())).Returns(expectedRent);
+        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CanCalculate(It.IsAny<ERentalPlan>())).Returns(true);
+        _weeklyRentCostCalculatorServiceMock.Setup(w => w.CalculateRentalCost(It.IsAny<MotorcycleRental>())).Returns(expectedRent);
 
         // Act
-        await Assert.ThrowsAsync<EntityCreationException>(() => _orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
-        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()), Times.Once);
+        await Assert.ThrowsAsync<EntityCreationException>(() => _orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
+        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateMotorcycleRentAsync_ThrowsInternalErrorException_WhenNoCalculatorServiceAvailable()
+    public async Task RentMotorcycleAsync_ThrowsInternalErrorException_WhenNoCalculatorServiceAvailable()
     {
         // Arrange
-        var motorcycleRentDto = new MotorcycleRentDto { RentPeriod = new DateTimeRange(DateTime.Now, DateTime.Now.AddDays(7)) };
+        var MotorcycleRentalDto = new MotorcycleRentalDto { RentalPeriod = new DateTimeRange(DateTime.Now, DateTime.Now.AddDays(7)) };
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
         var motorcycle = new Motorcycle { Id = Guid.NewGuid(), Plate = "123ABC" };
-        MotorcycleRent.Domain.Entities.MotorcycleRent expectedRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        MotorcycleRental expectedRent = new()
         {
             FeeCost = 0,
-            RentCost = 100
+            RentalCost = 100
         };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
@@ -198,19 +198,19 @@ public sealed class RentServiceOrchestratorTests
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
 
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-                           .ReturnsAsync((MotorcycleRent.Domain.Entities.MotorcycleRent?)null);  // No ongoing rent
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+                           .ReturnsAsync((MotorcycleRental?)null);  // No ongoing rent
 
         _motorcycleServiceOrchestratorMock.Setup(m => m.ListMotorcyclesAsync(It.IsAny<MotorcycleSearchCriteria>(), It.IsAny<CancellationToken>()))
-                                          .ReturnsAsync(new List<MotorcycleDto> { new MotorcycleDto { Id = motorcycle.Id, Plate = motorcycle.Plate } });
+                                          .ReturnsAsync(new List<MotorcycleDto> { new() { Id = motorcycle.Id, Plate = motorcycle.Plate } });
 
         _mapperMock.Setup(m => m.Map<Motorcycle>(It.IsAny<MotorcycleDto>())).Returns(motorcycle);
-        _mapperMock.Setup(m => m.Map<MotorcycleRent.Domain.Entities.MotorcycleRent>(It.IsAny<MotorcycleRentDto>())).Returns(new MotorcycleRent.Domain.Entities.MotorcycleRent());
+        _mapperMock.Setup(m => m.Map<MotorcycleRental>(It.IsAny<MotorcycleRentalDto>())).Returns(new MotorcycleRental());
 
-        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()))
-                           .Returns(Task.FromResult((MotorcycleRent.Domain.Entities.MotorcycleRent?)null));        
+        _rentRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()))
+                           .Returns(Task.FromResult((MotorcycleRental?)null));        
 
-        var orchestrator = new RentServiceOrchestrator(
+        var orchestrator = new RentalServiceOrchestrator(
             _userRepositoryMock.Object,
             _rentRepositoryMock.Object,
             _loggerMock.Object,
@@ -220,27 +220,27 @@ public sealed class RentServiceOrchestratorTests
             _motorcycleServiceOrchestratorMock.Object);
 
         // Act
-        await Assert.ThrowsAsync<InternalErrorException>(() => orchestrator.CreateMotorcycleRentAsync(motorcycleRentDto));
-        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()), Times.Never);
+        await Assert.ThrowsAsync<InternalErrorException>(() => orchestrator.RentMotorcycleAsync(MotorcycleRentalDto));
+        _rentRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task ReturnMotorcycleRentAsync_FinalizesRent_WhenRentIsOngoing()
+    public async Task ReturnMotorcycleRentalAsync_FinalizesRent_WhenRentIsOngoing()
     {
         // Arrange
         var deliveryPartner = new DeliveryPartner { Email = "test@example.com", DriverLicense = new DriverLicense() { DriverLicenseType = EDriverLicenseType.A } };
-        var ongoingRent = new MotorcycleRent.Domain.Entities.MotorcycleRent { RentStatus = ERentStatus.Ongoing, Motorcycle = new Motorcycle { Plate = "123ABC" } };
+        var ongoingRent = new MotorcycleRental { Status = ERentStatus.Ongoing, Motorcycle = new Motorcycle { Plate = "123ABC" } };
 
         _emailClaimProviderMock.Setup(x => x.GetUserEmail()).Returns("test@example.com");
         _userRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<DeliveryPartner, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(deliveryPartner);
-        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
+        _rentRepositoryMock.Setup(x => x.GetByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
                            .ReturnsAsync(ongoingRent);
 
         // Act
-        await _orchestrator.ReturnMotorcycleRentAsync();
+        await _orchestrator.ReturnMotorcycleRentalAsync();
 
         // Assert
-        _rentRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<MotorcycleRent.Domain.Entities.MotorcycleRent>(), It.IsAny<CancellationToken>()), Times.Once);
+        _rentRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<MotorcycleRental>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

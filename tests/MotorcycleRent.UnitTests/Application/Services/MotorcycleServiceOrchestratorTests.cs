@@ -3,7 +3,7 @@
 public sealed class MotorcycleServiceOrchestratorTests
 {
     private readonly Mock<IBaseRepository<Motorcycle>> _motorcycleRepositoryMock = new();
-    private readonly Mock<IBaseRepository<MotorcycleRent.Domain.Entities.MotorcycleRent>> _motorcycleRentRepositoryMock = new();
+    private readonly Mock<IBaseRepository<MotorcycleRental>> _MotorcycleRentalRepositoryMock = new();
     private readonly Mock<ILogger<MotorcycleServiceOrchestrator>> _loggerMock = new();
     private readonly Mock<IMapper> _mapperMock = new();
     private readonly MotorcycleServiceOrchestrator _orchestrator;
@@ -14,7 +14,7 @@ public sealed class MotorcycleServiceOrchestratorTests
             _motorcycleRepositoryMock.Object,
             _loggerMock.Object,
             _mapperMock.Object,
-            _motorcycleRentRepositoryMock.Object);
+            _MotorcycleRentalRepositoryMock.Object);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public sealed class MotorcycleServiceOrchestratorTests
         _motorcycleRepositoryMock.Setup(r => r.GetByAsync(It.IsAny<Expression<Func<Motorcycle, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(motorcycle);
 
-        _motorcycleRentRepositoryMock.Setup(r => r.GetAllByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<MotorcycleRent.Domain.Entities.MotorcycleRent>());
+        _MotorcycleRentalRepositoryMock.Setup(r => r.GetAllByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Enumerable.Empty<MotorcycleRental>());
 
         _motorcycleRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Motorcycle>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Motorcycle());
 
@@ -86,8 +86,8 @@ public sealed class MotorcycleServiceOrchestratorTests
         _motorcycleRepositoryMock.Setup(r => r.GetByAsync(It.IsAny<Expression<Func<Motorcycle, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(motorcycle);
 
-        _motorcycleRentRepositoryMock.Setup(r => r.GetAllByAsync(It.IsAny<Expression<Func<MotorcycleRent.Domain.Entities.MotorcycleRent, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<MotorcycleRent.Domain.Entities.MotorcycleRent>());
+        _MotorcycleRentalRepositoryMock.Setup(r => r.GetAllByAsync(It.IsAny<Expression<Func<MotorcycleRental, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Enumerable.Empty<MotorcycleRental>());
 
         // Act
         await _orchestrator.DeleteMotorcycleAsync(plate, CancellationToken.None);

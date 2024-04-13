@@ -6,7 +6,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public BaseRepository(
         MongoClient client,
-        IOptions<MotorcycleRentDatabaseOptions> options)
+        IOptions<MotorcycleRentalDatabaseOptions> options)
     {
         _collection = client.GetDatabase(options.Value.DatabaseName)
             .GetCollection<TEntity>(options.Value.GetCollectionName<TEntity>());
@@ -55,6 +55,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<long> CountDocumentsAsync(EstimatedDocumentCountOptions estimatedDocumentCountOptions, CancellationToken cancellationToken = default)
     {
         return await _collection.EstimatedDocumentCountAsync(estimatedDocumentCountOptions, cancellationToken);
+    }
+
+    public async Task<long> CountDocumentsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _collection.CountDocumentsAsync(predicate, cancellationToken: cancellationToken);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)

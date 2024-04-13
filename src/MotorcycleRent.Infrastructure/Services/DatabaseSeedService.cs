@@ -45,6 +45,8 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
             var adminCreationTask = userService.CreateAdministratorAsync(_options.AdministratorSeedUser!);
             var deliveryPartnerCreationTask = userService.CreateDeliveryPartnerAsync(_options.DeliveryPartnerSeedUser!);
 
+            await SeedMassiveDataAsync(scope);
+
             await Task.WhenAll(adminCreationTask, deliveryPartnerCreationTask);
 
             _logger.LogInformation("Database successfully seeded. Proceeding with startup.");
@@ -53,5 +55,10 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
         {
             _logger.LogError("An error occurred while seeding the database. Proceeding with startup. Exception: {exception}", ex);
         }
+    }
+
+    private async Task SeedMassiveDataAsync(IServiceScope scope)
+    {
+        
     }
 }

@@ -25,7 +25,7 @@ public sealed class TokenGeneratorServiceTests
         var claim = new Claim(ClaimTypes.Name, "TestUser");
 
         // Act
-        var jwtToken = _tokenGeneratorService.GenerateToken(new List<Claim> { claim });
+        var jwtToken = _tokenGeneratorService.GenerateToken([claim]);
 
         // Assert
         Assert.NotNull(jwtToken);
@@ -37,11 +37,11 @@ public sealed class TokenGeneratorServiceTests
     public void GenerateToken_MultipleClaims_ReturnsValidJwtWithClaims()
     {
         // Arrange
-        var claims = new List<Claim>
-        {
+        List<Claim> claims =
+        [
             new Claim(ClaimTypes.Name, "TestUser"),
             new Claim(ClaimTypes.Role, "Administrator")
-        };
+        ];
 
         // Act
         var jwtToken = _tokenGeneratorService.GenerateToken(claims);

@@ -18,7 +18,7 @@ public sealed class DeliveryPartnerDtoValidator : AbstractValidator<DeliveryPart
 
         RuleFor(x => x.BirthDate)
             .NotEmpty()
-            .LessThan(DateTime.Now.AddYears(-18));
+            .LessThan(DateTime.UtcNow.AddYears(-18));
 
         RuleFor(x => x.NationalId)
             .NotEmpty()

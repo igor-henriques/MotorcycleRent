@@ -2,21 +2,21 @@
 
 public sealed class RentCostCalculatorServiceTests
 {
-    private readonly WeeklyRentCostCalculatorService _weeklyRentCostCalculatorService;
-    private readonly RentOptions _rentOptions;
+    private readonly WeeklyRentalCostCalculatorService _weeklyRentCostCalculatorService;
+    private readonly RentalOptions _rentalOptions;
 
     public RentCostCalculatorServiceTests()
     {
-        _rentOptions = new RentOptions()
+        _rentalOptions = new RentalOptions()
         {
             DailyExceededFee = 50,
-            EarlyReturnFeePercentage = new RentOptions.EarlyReturnFee()
+            EarlyReturnFeePercentage = new RentalOptions.EarlyReturnFee()
             {
                 WeeklyPercentage = 20,
                 BiweeklyPercentage = 40,
                 MonthlyPercentage = 60,
             },
-            RentPlanCost = new RentOptions.PlanCost()
+            RentalPlanCost = new RentalOptions.PlanCost()
             {
                 WeeklyDailyCost = 30,
                 BiweeklyDailyCost = 28,
@@ -24,70 +24,90 @@ public sealed class RentCostCalculatorServiceTests
             }
         };
 
-        var options = Options.Create(_rentOptions);
-        _weeklyRentCostCalculatorService = new WeeklyRentCostCalculatorService(options);
+        var options = Options.Create(_rentalOptions);
+        _weeklyRentCostCalculatorService = new WeeklyRentalCostCalculatorService(options);
     }
 
     [Fact]
-    public void CalculateRentCost_ShouldAddFee_WhenEarlyReturning()
+    public void CalculateRentalCost_ShouldAddFee_WhenEarlyReturning()
     {
         // Arrange
         int earlyReturnDaysCount = 2;
-        var motorcycleRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        var MotorcycleRental = new MotorcycleRental()
         {
             RentPeriod = new DateTimeRange(
-                DateTime.Now.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
-                DateTime.Now),
-            RentPlan = ERentPlan.Weekly
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
+                DateTime.UtcNow),
+            RentalPlan = ERentalPlan.Weekly
         };
 
         // Act
-        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentCost(motorcycleRent);
+        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentalCost(MotorcycleRental);
 
         // Assert
         Assert.True(calculatedRent.FeeCost > 0);
-        Assert.True(calculatedRent.ActualCost > calculatedRent.RentCost);
+        Assert.True(calculatedRent.ActualCost > calculatedRent.RentalCost);
     }
 
     [Fact]
-    public void CalculateRentCost_ShouldAddFee_WhenLateReturning()
+    public void CalculateRentalCost_ShouldAddFee_WhenLateReturning()
     {
         // Arrange
         int lateReturnDaysCount = 2;
-        var motorcycleRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        var motorcycleRental = new MotorcycleRental()
         {
             RentPeriod = new DateTimeRange(
-                DateTime.Now.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) - lateReturnDaysCount),
-                DateTime.Now),
-            RentPlan = ERentPlan.Weekly
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) - lateReturnDaysCount),
+                DateTime.UtcNow),
+            RentalPlan = ERentalPlan.Weekly
         };
 
         // Act
-        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentCost(motorcycleRent);
+        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentalCost(motorcycleRental);
 
         // Assert
         Assert.True(calculatedRent.FeeCost > 0);
-        Assert.True(calculatedRent.ActualCost > calculatedRent.RentCost);
+        Assert.True(calculatedRent.ActualCost > calculatedRent.RentalCost);
     }
 
     [Fact]
-    public void CalculateRentCost_ShouldNotAddFee_WhenRegularRent()
+    public void CalculateRentalCost_ShouldNotAddFee_WhenRegularRental()
     {
         // Arrange
         int earlyReturnDaysCount = 0;
-        var motorcycleRent = new MotorcycleRent.Domain.Entities.MotorcycleRent()
+        var motorcycleRental = new MotorcycleRental()
         {
             RentPeriod = new DateTimeRange(
-                DateTime.Now.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
-                DateTime.Now),
-            RentPlan = ERentPlan.Weekly
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
+                DateTime.UtcNow),
+            RentalPlan = ERentalPlan.Weekly
         };
 
         // Act
-        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentCost(motorcycleRent);
+        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentalCost(motorcycleRental);
 
         // Assert
         Assert.True(calculatedRent.FeeCost == 0);
-        Assert.True(calculatedRent.ActualCost == calculatedRent.RentCost);
+        Assert.True(calculatedRent.ActualCost == calculatedRent.RentalCost);
+    }
+
+    [Fact]
+    public void CalculateRentalCost_ShouldConsiderPlanRenovations_WhenRegularRental()
+    {
+        // Arrange        
+        var motorcycleRental = new MotorcycleRental()
+        {
+            RentPeriod = new DateTimeRange(
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) * 2),
+                DateTime.UtcNow),
+            RentalPlan = ERentalPlan.Weekly
+        };        
+
+        // Act
+        var calculatedRent = _weeklyRentCostCalculatorService.CalculateRentalCost(motorcycleRental);
+
+        // Assert
+        Assert.True(calculatedRent.FeeCost == 0);
+        Assert.True(calculatedRent.ActualCost == calculatedRent.RentalCost);
     }
 }

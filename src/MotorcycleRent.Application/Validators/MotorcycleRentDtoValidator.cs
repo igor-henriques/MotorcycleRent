@@ -1,10 +1,10 @@
 ﻿namespace MotorcycleRent.Application.Validators;
 
-public sealed class MotorcycleRentDtoValidator : AbstractValidator<MotorcycleRentDto>
+public sealed class MotorcycleRentalDtoValidator : AbstractValidator<MotorcycleRentalDto>
 {
-    public MotorcycleRentDtoValidator()
+    public MotorcycleRentalDtoValidator()
     {
-        RuleFor(x => x.RentPeriod)
+        RuleFor(x => x.RentalPeriod)
             .Must(x => x.NumberOfDays() >= 1)
             .WithMessage("At least one day must be selected");
     }

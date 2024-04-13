@@ -7,7 +7,7 @@ public static class RentPlanHelper
     /// </summary>
     /// <param name="rentPeriod">A <see cref="DateTimeRange"/> object representing the start and end date of the rental period.</param>
     /// <returns>
-    /// Returns an <see cref="ERentPlan"/> enumeration that indicates the rent plan:
+    /// Returns an <see cref="ERentalPlan"/> enumeration that indicates the rent plan:
     /// <list type="bullet">
     /// <item>
     /// <description>Weekly: If the number of days is less than or equal to 7.</description>
@@ -26,13 +26,13 @@ public static class RentPlanHelper
     /// <see cref="Constants.DEFAULT_WEEKLY_DAYS"/>, <see cref="Constants.DEFAULT_BIWEEKLY_DAYS"/>, and <see cref="Constants.DEFAULT_MONTHLY_DAYS"/>.
     /// These constants define the thresholds for each rental plan type.
     /// </remarks>
-    public static ERentPlan GetRentPlan(DateTimeRange rentPeriod)
+    public static ERentalPlan GetRentalPlan(DateTimeRange rentPeriod)
     {
         return (int)rentPeriod.NumberOfDays() switch
         {
-            <= Constants.DEFAULT_WEEKLY_DAYS => ERentPlan.Weekly,
-            > Constants.DEFAULT_WEEKLY_DAYS and < Constants.DEFAULT_MONTHLY_DAYS => ERentPlan.Biweekly,
-            >= Constants.DEFAULT_MONTHLY_DAYS => ERentPlan.Monthly,
+            <= Constants.DEFAULT_WEEKLY_DAYS => ERentalPlan.Weekly,
+            > Constants.DEFAULT_WEEKLY_DAYS and < Constants.DEFAULT_MONTHLY_DAYS => ERentalPlan.Biweekly,
+            >= Constants.DEFAULT_MONTHLY_DAYS => ERentalPlan.Monthly,
         };
     }
 }

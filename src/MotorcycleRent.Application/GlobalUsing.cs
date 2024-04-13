@@ -19,3 +19,6 @@ global using MotorcycleRent.Domain.Models.Enums;
 global using Swashbuckle.AspNetCore.Annotations;
 global using System.Reflection;
 global using System.Security.Claims;
+global using System.Diagnostics.CodeAnalysis;
+global using MotorcycleRent.Core;
+global using InvalidOperationException = MotorcycleRent.Domain.Exceptions.InvalidOperationException;

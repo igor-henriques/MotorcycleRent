@@ -10,9 +10,9 @@ public sealed record DriverLicenseDto : IDto
     {
         var form = await context.Request.ReadFormAsync();
 
-        var driverLicenseImage = form.Files["DriverLicenseImage"];
-        var driverLicenseId = form["DriverLicenseId"];
-        var driverLicenseType = form["DriverLicenseType"];
+        var driverLicenseImage = form.Files[nameof(DriverLicenseImage)];
+        var driverLicenseId = form[nameof(DriverLicenseId)];
+        var driverLicenseType = form[nameof(DriverLicenseType)];
 
         return new DriverLicenseDto
         {

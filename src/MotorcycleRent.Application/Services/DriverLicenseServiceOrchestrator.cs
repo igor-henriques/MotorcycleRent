@@ -40,7 +40,7 @@ public sealed class DriverLicenseServiceOrchestrator : IDriverLicenseServiceOrch
         var deliveryPartnerEmail = _emailClaimProvider.GetUserEmail();
 
         var deliveryPartner = await _userRepository.GetByAsync(u => u.Email == deliveryPartnerEmail, cancellationToken)
-            ?? throw new InvalidOperationException("Invalid delivery partner");
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidDeliveryPartner);
 
         bool driverLicenseAlreadyExists = await _userRepository.GetByAsync(u => u.DriverLicense != null && u.DriverLicense.DriverLicenseId == driverLicenseDto.DriverLicenseId, cancellationToken) != null;
         if (driverLicenseAlreadyExists)
@@ -49,7 +49,7 @@ public sealed class DriverLicenseServiceOrchestrator : IDriverLicenseServiceOrch
                 nameof(DriverLicenseServiceOrchestrator),
                 deliveryPartnerEmail);
 
-            throw new InvalidOperationException("Driver license already exists");
+            throw new InvalidOperationException(Constants.Messages.DriverLicenseExists);
         }
 
         var driverLicense = _mapper.Map<DriverLicense>(driverLicenseDto);
@@ -80,7 +80,7 @@ public sealed class DriverLicenseServiceOrchestrator : IDriverLicenseServiceOrch
         var deliveryPartnerEmail = _emailClaimProvider.GetUserEmail();
 
         var deliveryPartner = await _userRepository.GetByAsync(u => u.DriverLicense != null && u.DriverLicense.DriverLicenseId == driverLicenseDto.DriverLicenseId, cancellationToken)
-            ?? throw new InvalidOperationException("Delivery partner does not exist or does not have driver license registered");
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidDriverLicense);
 
         var driverLicense = _mapper.Map<DriverLicense>(driverLicenseDto);
         var driverLicenseImageUrl = await _driverLicenseImageHandlerService.UploadImageAsync(driverLicenseDto, cancellationToken);

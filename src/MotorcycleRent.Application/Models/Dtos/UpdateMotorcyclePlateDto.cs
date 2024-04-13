@@ -1,11 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace MotorcycleRent.Application.Models.Dtos;
 
-namespace MotorcycleRent.Application.Models.Dtos;
-
-public sealed record UpdateMotorcycleStateDto
+public sealed record UpdateMotorcyclePlateDto
 {
-    public string? Plate { get; init; }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public EMotorcycleState State { get; init; }
+    public string? OldPlate { get; init; }
+    public string? NewPlate { get; init; }
 }

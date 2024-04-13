@@ -7,7 +7,7 @@ public static class ConfigureAutoMapper
         services.AddAutoMapper(typeof(UserProfile));
         services.AddAutoMapper(typeof(MotorcycleProfile));
         services.AddAutoMapper(typeof(DriverLicenseProfile));
-        services.AddAutoMapper(typeof(RentProfile));
+        services.AddAutoMapper(typeof(MotorcycleRentalProfile));
 
         return services;
     }

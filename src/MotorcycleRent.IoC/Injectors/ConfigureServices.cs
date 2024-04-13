@@ -13,11 +13,14 @@ public static class ConfigureServices
         services.AddScoped<IDriverLicenseServiceOrchestrator, DriverLicenseServiceOrchestrator>()
             .Decorate<IDriverLicenseServiceOrchestrator>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));
 
-        services.AddScoped<IRentServiceOrchestrator, RentServiceOrchestrator>()
-            .Decorate<IRentServiceOrchestrator>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));
+        services.AddScoped<IRentalServiceOrchestrator, RentalServiceOrchestrator>()
+            .Decorate<IRentalServiceOrchestrator>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));
 
         services.AddScoped<IDriverLicenseImageHandlerService, DriverLicenseImageHandlerService>()
-            .Decorate<IDriverLicenseImageHandlerService>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));
+            .Decorate<IDriverLicenseImageHandlerService>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));   
+
+        services.AddScoped<IOrderServiceOrchestrator, OrderServiceOrchestrator>()
+            .Decorate<IOrderServiceOrchestrator>((inner, serviceProvider) => ValidationInterceptor.Create(inner, serviceProvider));
 
         services.AddScoped<IEmailClaimProvider, EmailClaimProvider>();
 
@@ -29,15 +32,17 @@ public static class ConfigureServices
 
     public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
-        services.AddSingleton<IRentCostCalculatorService, WeeklyRentCostCalculatorService>();
-        services.AddSingleton<IRentCostCalculatorService, BiweeklyRentCostCalculatorService>();
-        services.AddSingleton<IRentCostCalculatorService, MonthlyRentCostCalculatorService>();
+        services.AddSingleton<IRentalCostCalculatorService, WeeklyRentalCostCalculatorService>();
+        services.AddSingleton<IRentalCostCalculatorService, BiweeklyRentalCostCalculatorService>();
+        services.AddSingleton<IRentalCostCalculatorService, MonthlyRentalCostCalculatorService>();
         return services;
     }
 
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddSingleton<IDatabaseSeedService, DatabaseSeedService>();
+        services.AddSingleton(typeof(IPublisher<>), typeof(BaseServiceBusPublisher<>));
+
         return services;
     }
 }

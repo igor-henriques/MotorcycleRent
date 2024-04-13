@@ -7,3 +7,6 @@ global using System.Text.Json.Serialization;
 global using MongoDB.Driver;
 global using MotorcycleRent.Domain.Entities;
 global using System.Linq.Expressions;
+global using System.Numerics;
+global using System.Text;
+global using MotorcycleRent.Domain.Helpers;

@@ -1,16 +1,13 @@
-﻿global using FluentValidation;
-global using Microsoft.AspNetCore.Diagnostics;
+﻿global using Microsoft.AspNetCore.Diagnostics;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.IO;
 global using MotorcycleRent.Api.Endpoints;
 global using MotorcycleRent.Api.Middlewares;
-global using MotorcycleRent.Application.Exceptions;
 global using MotorcycleRent.Application.Models.Dtos;
 global using MotorcycleRent.Application.Services;
 global using MotorcycleRent.Domain.Exceptions;
 global using MotorcycleRent.Infrastructure.Services;
 global using MotorcycleRent.IoC.Injectors;
 global using Serilog;
-global using System.Net;
 global using System.Text.Json.Serialization;
 global using static MotorcycleRent.Core.Constants;

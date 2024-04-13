@@ -11,5 +11,5 @@ public sealed record MotorcycleDto : IDto
     public string? Plate { get; init; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public EMotorcycleState State { get; init; }
+    public EMotorcycleStatus Status { get; init; }
 }

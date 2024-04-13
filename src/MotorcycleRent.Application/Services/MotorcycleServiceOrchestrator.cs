@@ -6,19 +6,19 @@
 public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrator
 {
     private readonly IBaseRepository<Motorcycle> _motorcycleRepository;
-    private readonly IBaseRepository<Domain.Entities.MotorcycleRent> _motorcycleRentRepository;
+    private readonly IBaseRepository<MotorcycleRental> _MotorcycleRentalRepository;
     private readonly ILogger<MotorcycleServiceOrchestrator> _logger;
     private readonly IMapper _mapper;
 
     public MotorcycleServiceOrchestrator(IBaseRepository<Motorcycle> motorcycleRepository,
                                          ILogger<MotorcycleServiceOrchestrator> logger,
                                          IMapper mapper,
-                                         IBaseRepository<Domain.Entities.MotorcycleRent> motorcycleRentRepository)
+                                         IBaseRepository<MotorcycleRental> MotorcycleRentalRepository)
     {
         _motorcycleRepository = motorcycleRepository;
         _logger = logger;
         _mapper = mapper;
-        _motorcycleRentRepository = motorcycleRentRepository;
+        _MotorcycleRentalRepository = MotorcycleRentalRepository;
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
                 nameof(MotorcycleServiceOrchestrator),
                 motorcycleDto.Plate);
 
-            throw new InvalidOperationException("Invalid plate update operation. Plate already exists.");
+            throw new InvalidOperationException(Constants.Messages.InvalidPlateOperation);
         }
     }
 
@@ -91,9 +91,9 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
             filter &= Builders<Motorcycle>.Filter.Eq(m => m.Plate, criteria.Plate);
         }
 
-        if (criteria.State.HasValue)
+        if (criteria.Status.HasValue)
         {
-            filter &= Builders<Motorcycle>.Filter.Eq(m => m.State, criteria.State.Value);
+            filter &= Builders<Motorcycle>.Filter.Eq(m => m.Status, criteria.Status.Value);
         }
 
         var filteredMotorcycles = await _motorcycleRepository.GetAllAsync(filter, cancellationToken);
@@ -114,19 +114,19 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
     public async Task UpdateMotorcyclePlateAsync(UpdateMotorcyclePlateDto plateUpdateDto, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate == plateUpdateDto.OldPlate, cancellationToken)
-            ?? throw new InvalidOperationException("Invalid motorcycle plate");
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidMotorcyclePlate);
 
-        var rents = await _motorcycleRentRepository.GetAllByAsync(m => m.Motorcycle!.Plate == motorcycle.Plate && m.RentStatus == ERentStatus.Ongoing, cancellationToken);
+        var rent = await _MotorcycleRentalRepository.GetByAsync(m => m.Motorcycle!.Plate == motorcycle.Plate && m.Status == ERentStatus.Ongoing, cancellationToken);
 
-        if (rents.Any())
+        if (rent is not null)
         {
-            throw new InvalidOperationException("Impossible to motorcycle while an ongoing rent");
+            throw new OnGoingRentalException(rent.RentPeriod, rent.Motorcycle!.Plate!);
         }
 
         try
         {
             _ = await _motorcycleRepository.UpdateAsync(motorcycle with { Plate = plateUpdateDto.NewPlate }, cancellationToken)
-                ?? throw new InternalErrorException("An error occurred while updating a motorcycle plate");
+                ?? throw new InternalErrorException(Constants.Messages.InvalidMotorcycleUpdate);
         }
         catch (MongoWriteException)
         {
@@ -134,7 +134,7 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
                 nameof(MotorcycleServiceOrchestrator),
                 plateUpdateDto.NewPlate);
 
-            throw new InvalidOperationException("Invalid plate update operation. New plate already exists.");
+            throw new InvalidOperationException(Constants.Messages.InvalidMotorcycleUpdate);
         }
 
         _logger.LogInformation("Motorcycle id {MotorcycleId} had a plate update from {OldPlate} to {NewPlate}",
@@ -144,23 +144,23 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
     }
 
     /// <summary>
-    /// Updates the state of a motorcycle.
+    /// Updates the status of a motorcycle.
     /// </summary>
-    /// <param name="plateUpdateDto">The DTO containing the motorcycle plate and the new state.</param>
+    /// <param name="plateUpdateDto">The DTO containing the motorcycle plate and the new status.</param>
     /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
     /// <exception cref="InvalidOperationException">Thrown if the motorcycle plate is invalid or an error occurs during the update.</exception>
-    public async Task UpdateMotorcycleStateAsync(UpdateMotorcycleStateDto plateUpdateDto, CancellationToken cancellationToken = default)
+    public async Task UpdateMotorcycleStatusAsync(UpdateMotorcycleStatusDto plateUpdateDto, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate!.Equals(plateUpdateDto.Plate, StringComparison.CurrentCultureIgnoreCase), cancellationToken)
-            ?? throw new InvalidOperationException("Invalid motorcycle plate");
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidMotorcyclePlate);
 
-        _ = await _motorcycleRepository.UpdateAsync(motorcycle with { State = plateUpdateDto.State }, cancellationToken)
-            ?? throw new InternalErrorException("An error occurred while updating a motorcycle state");
+        _ = await _motorcycleRepository.UpdateAsync(motorcycle with { Status = plateUpdateDto.Status }, cancellationToken)
+            ?? throw new InternalErrorException(Constants.Messages.InvalidMotorcycleUpdate);
 
-        _logger.LogInformation("Motorcycle plate {MotorcyclePlate} had a state update from {OldState} to {NewState}",
+        _logger.LogInformation("Motorcycle plate {MotorcyclePlate} had a status update from {OldStatus} to {NewStatus}",
             motorcycle.Plate,
-            motorcycle.State,
-            plateUpdateDto.State);
+            motorcycle.Status,
+            plateUpdateDto.Status);
     }
 
     /// <summary>
@@ -172,19 +172,20 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
     public async Task DeleteMotorcycleAsync(string motorcyclePlate, CancellationToken cancellationToken = default)
     {
         var motorcycle = await _motorcycleRepository.GetByAsync(m => m.Plate!.Equals(motorcyclePlate, StringComparison.CurrentCultureIgnoreCase), cancellationToken)
-            ?? throw new InvalidOperationException("Invalid motorcycle plate");
+            ?? throw new InvalidOperationException(Constants.Messages.InvalidMotorcyclePlate);
 
-        var rents = await _motorcycleRentRepository.GetAllByAsync(m => m.Motorcycle!.Plate == motorcycle.Plate, cancellationToken);
+        var rent = await _MotorcycleRentalRepository.GetAllByAsync(m => m.Motorcycle!.Plate == motorcycle.Plate, cancellationToken);
+        var lastRent = rent.LastOrDefault();
 
-        if (!rents.Any())
+        if (lastRent is null)
         {
             await _motorcycleRepository.DeleteAsync(motorcycle.Id, cancellationToken);
             _logger.LogInformation("Motorcycle plate {MotorcyclePlate} successfully deleted", motorcycle.Plate);
         }
         else
         {
-            _logger.LogWarning("Motorcycle plate {MotorcyclePlate} cannot be deleted as it has {RentCount} rent records.", motorcycle.Plate, rents.Count());
-            throw new InvalidOperationException("Impossible to delete a motorcycle record after a rent is created using it.");
+            _logger.LogWarning("Motorcycle plate {MotorcyclePlate} cannot be deleted as it was rented once", motorcycle.Plate);
+            throw new InvalidOperationException(Constants.Messages.MotorcycleRentedOnce);
         }
     }
 }

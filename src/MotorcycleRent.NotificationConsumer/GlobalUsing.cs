@@ -1,0 +1,1 @@
+﻿global using MotorcycleRent.NotificationConsumer.Models.Enums;

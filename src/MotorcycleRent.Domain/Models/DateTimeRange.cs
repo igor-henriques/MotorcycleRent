@@ -3,7 +3,7 @@
 /// <summary>
 /// https://raw.githubusercontent.com/TobiStr/DateTimeRange/master/src/DateTimeRange/DateTimeRange.cs
 /// </summary>
-public struct DateTimeRange : IEquatable<DateTimeRange>, IComparable<DateTimeRange>
+public readonly struct DateTimeRange : IEquatable<DateTimeRange>, IComparable<DateTimeRange>
 {
     [Newtonsoft.Json.JsonIgnore]
     [JsonIgnore]
@@ -23,12 +23,12 @@ public struct DateTimeRange : IEquatable<DateTimeRange>, IComparable<DateTimeRan
     /// <summary>
     /// The <see cref="DateTime"/>, the range starts with
     /// </summary>
-    public DateTime Start { get; set; }
+    public DateTime Start { get; init; }
 
     /// <summary>
     /// The <see cref="DateTime"/>, the range ends with
     /// </summary>
-    public DateTime End { get; set; }
+    public DateTime End { get; init; }
 
     /// <summary>
     /// Initializes a new instance of <see cref="DateTimeRange"/>
@@ -133,5 +133,47 @@ public struct DateTimeRange : IEquatable<DateTimeRange>, IComparable<DateTimeRan
     public readonly string ToShortDateString()
     {
         return $"{Start:MM/dd/yyyy} - {End:MM/dd/yyyy}";
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;        
+        if (obj.GetType() != GetType()) return false;
+        return Equals((DateTimeRange)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Start, End);
+    }
+
+    public static bool operator ==(DateTimeRange left, DateTimeRange right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(DateTimeRange left, DateTimeRange right)
+    {
+        return !(left == right);
+    }
+
+    public static bool operator <(DateTimeRange left, DateTimeRange right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+
+    public static bool operator <=(DateTimeRange left, DateTimeRange right)
+    {
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >(DateTimeRange left, DateTimeRange right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+
+    public static bool operator >=(DateTimeRange left, DateTimeRange right)
+    {
+        return left.CompareTo(right) >= 0;
     }
 }

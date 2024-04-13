@@ -6,7 +6,8 @@ public sealed record DeliveryPartner : User
     public string? NationalId { get; init; }
     public DateTime BirthDate { get; init; }
     public DriverLicense? DriverLicense { get; init; }
-    public List<string> Notifications { get; init; } = [];
+    public List<Order> Notifications { get; init; } = [];
+    public bool HasActiveRental { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the delivery partner is eligible to rent a vehicle.
@@ -14,7 +15,8 @@ public sealed record DeliveryPartner : User
     /// <value>
     /// <para>
     /// This property returns <c>true</c> if the delivery partner has a valid driver's license
-    /// and the driver's license type is either A or AB, which are required for renting vehicles.
+    /// and the driver's license type is either A or AB, which are required for renting vehicles,
+    /// and if the partner does not have any active rental.
     /// </para>
     /// <para>
     /// It returns <c>false</c> if the delivery partner does not have a valid driver's license,
@@ -26,5 +28,9 @@ public sealed record DeliveryPartner : User
     /// of either <see cref="EDriverLicenseType.A"/> or <see cref="EDriverLicenseType.AB"/> for this property to return <c>true</c>.
     /// This property is used to quickly determine rental eligibility without further checks.
     /// </remarks>
-    public bool IsPartnerAbleToRent => DriverLicense != null && DriverLicense.DriverLicenseType is EDriverLicenseType.A or EDriverLicenseType.AB;
+    public bool IsPartnerAbleToRent => !HasActiveRental && 
+        DriverLicense != null && 
+        DriverLicense.DriverLicenseType is EDriverLicenseType.A or EDriverLicenseType.AB;
+
+    public bool CanOrderBeAccepted(Order order) => HasActiveRental && Notifications.Any(o => o.PublicOrderId == order.PublicOrderId);
 }

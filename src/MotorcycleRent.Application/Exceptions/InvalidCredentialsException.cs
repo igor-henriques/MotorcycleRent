@@ -2,8 +2,5 @@
 
 public sealed class InvalidCredentialsException : Exception
 {
-    public InvalidCredentialsException() : base("Authentication failed")
-    {
-
-    }
+    public InvalidCredentialsException() : base("Authentication failed") { }
 }

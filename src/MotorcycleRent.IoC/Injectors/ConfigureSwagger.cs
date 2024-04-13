@@ -8,9 +8,9 @@ public static class ConfigureSwagger
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "MotorcycleRent API",
+                Title = "MotorcycleRental API",
                 Version = "v1",
-                Description = "Provide full control over MotorcycleRent operation",
+                Description = "Provide full control over MotorcycleRental operation",
                 Contact = new OpenApiContact() { Name = "Igor Henriques - Backend Developer" }
             });
 

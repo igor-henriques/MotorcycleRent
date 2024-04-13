@@ -12,26 +12,15 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        bool isInternalError = exception is
-            InternalErrorException or
-            EntityCreationException or
-            Exception;
-
-        if (isInternalError)
+        if (exception is DomainException)
         {            
             _logger.LogError(InternalServerErrorMessage, exception.Message);
         }
 
         (int statusCode, string details) = exception switch
         {
-            InvalidOperationException or
-            ValidationException or
-            InvalidCredentialsException or
-            DateTimeInvalidRangeException or
-            NoMotorcyclesAvailableException or
-            OnGoingRentException or
-            PartnerUnableToRentException => (StatusCodes.Status400BadRequest, exception.Message),
-            _ => (StatusCodes.Status500InternalServerError, Messages.InternalServerErrorMessage)
+            DomainException => (StatusCodes.Status400BadRequest, exception.Message),
+            _ => (StatusCodes.Status500InternalServerError, Messages.InternalServerError)
         };
 
         httpContext.Response.StatusCode = statusCode;

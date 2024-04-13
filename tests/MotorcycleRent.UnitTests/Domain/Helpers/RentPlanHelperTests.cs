@@ -9,10 +9,10 @@ public sealed class RentPlanHelperTests
         var rentPeriod = new DateTimeRange(DateTime.Today, DateTime.Today.AddDays(6)); // 7 days or less
 
         // Act
-        var plan = RentPlanHelper.GetRentPlan(rentPeriod);
+        var plan = RentPlanHelper.GetRentalPlan(rentPeriod);
 
         // Assert
-        Assert.Equal(ERentPlan.Weekly, plan);
+        Assert.Equal(ERentalPlan.Weekly, plan);
     }
 
     [Fact]
@@ -22,10 +22,10 @@ public sealed class RentPlanHelperTests
         var rentPeriod = new DateTimeRange(DateTime.Today, DateTime.Today.AddDays(13)); // More than 7 days, less than 30
 
         // Act
-        var plan = RentPlanHelper.GetRentPlan(rentPeriod);
+        var plan = RentPlanHelper.GetRentalPlan(rentPeriod);
 
         // Assert
-        Assert.Equal(ERentPlan.Biweekly, plan);
+        Assert.Equal(ERentalPlan.Biweekly, plan);
     }
 
     [Fact]
@@ -35,9 +35,9 @@ public sealed class RentPlanHelperTests
         var rentPeriod = new DateTimeRange(DateTime.Today, DateTime.Today.AddDays(30)); // 30 days or more
 
         // Act
-        var plan = RentPlanHelper.GetRentPlan(rentPeriod);
+        var plan = RentPlanHelper.GetRentalPlan(rentPeriod);
 
         // Assert
-        Assert.Equal(ERentPlan.Monthly, plan);
+        Assert.Equal(ERentalPlan.Monthly, plan);
     }
 }

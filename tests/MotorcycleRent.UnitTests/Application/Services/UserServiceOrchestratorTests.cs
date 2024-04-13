@@ -53,7 +53,7 @@ public sealed class UserServiceOrchestratorTests
                            .Returns(Task.CompletedTask);
 
         _userRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<DeliveryPartner>(), It.IsAny<CancellationToken>()))
-                           .ThrowsAsync(new InvalidOperationException());
+                           .ThrowsAsync(new InvalidOperationException("random exception"));
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _orchestrator.CreateDeliveryPartnerAsync(partnerDto));
@@ -64,7 +64,7 @@ public sealed class UserServiceOrchestratorTests
     {
         // Arrange
         var userDto = new UserDto { Email = "user@example.com", Password = "password123" };
-        var user = new User { Email = userDto.Email, HashedPassword = "hashedPassword", Claims = new List<Claim>() };
+        var user = new User { Email = userDto.Email, HashedPassword = "hashedPassword", Claims = [] };
         var token = new JwtToken { Token = "token123", ExpiresAt = DateTime.UtcNow.AddHours(1) };
 
         _userRepositoryMock.Setup(r => r.GetByAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))

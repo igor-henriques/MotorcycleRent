@@ -18,9 +18,7 @@ public sealed class HttpLoggingDetailsMiddleware
         context.Request.EnableBuffering();
 
         var originalResponseBody = context.Response.Body;
-
         using var responseBody = _recyclableMemoryStreamManager.GetStream();
-
         context.Response.Body = responseBody;
 
         try
@@ -43,9 +41,6 @@ public sealed class HttpLoggingDetailsMiddleware
 
     private async Task LogDetailsAsync(HttpContext context, Exception? ex = null)
     {
-        _logger.LogInformation("RequestHeaders: {RequestHeaders}", context.Request.Headers);
-        _logger.LogInformation("ResponseHeaders: {ResponseHeaders}", context.Response.Headers);
-
         var requestBody = await GetRequestBodyAsync(context);
         var responseBody = await GetResponseBodyAsync(context);
 
@@ -61,20 +56,26 @@ public sealed class HttpLoggingDetailsMiddleware
     private async Task<string> GetRequestBodyAsync(HttpContext context)
     {
         await using var requestStream = _recyclableMemoryStreamManager.GetStream();
+
         var oldPosition = context.Request.Body.Position;
         context.Request.Body.Position = 0;
+
         await context.Request.Body.CopyToAsync(requestStream);
         context.Request.Body.Position = oldPosition;
+
         return await ReadStreamInBlocksAsync(requestStream);
     }
 
     private static async Task<string> GetResponseBodyAsync(HttpContext context)
     {
         var stream = context.Response.Body;
+
         var oldPosition = stream.Position;
         stream.Position = 0;
+
         var body = await ReadStreamInBlocksAsync(stream);
         stream.Position = oldPosition;
+
         return body;
     }
 

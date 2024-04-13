@@ -6,5 +6,5 @@ public sealed record MotorcycleSearchCriteria
     public int? Year { get; init; }
     public string? Model { get; init; }
     public string? Plate { get; init; }
-    public EMotorcycleState? State { get; init; }
+    public EMotorcycleStatus? Status { get; init; }
 }

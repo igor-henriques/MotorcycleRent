@@ -20,3 +20,5 @@ global using System.IdentityModel.Tokens.Jwt;
 global using System.Linq.Expressions;
 global using System.Security.Claims;
 global using System.Text;
+global using Azure.Messaging.ServiceBus;
+global using InvalidOperationException = MotorcycleRent.Domain.Exceptions.InvalidOperationException;

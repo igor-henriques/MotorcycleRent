@@ -13,4 +13,5 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     Task<IEnumerable<TEntity>> GetAllAsync(FilterDefinition<TEntity> filterDefinition, CancellationToken cancellationToken = default);
     Task<IEnumerable<TEntity>> GetAllByAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<TEntity?> GetAsync(FilterDefinition<TEntity> filterDefinition, CancellationToken cancellationToken = default);
+    Task<long> CountDocumentsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 }

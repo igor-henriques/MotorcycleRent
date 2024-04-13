@@ -8,8 +8,11 @@ public static class ConfigureValidators
         services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
         services.AddScoped<IValidator<DeliveryPartnerDto>, DeliveryPartnerDtoValidator>();
         services.AddScoped<IValidator<IFormFile>, DriverLicenseImageValidator>();
-        services.AddScoped<IValidator<MotorcycleRentDto>, MotorcycleRentDtoValidator>();
+        services.AddScoped<IValidator<MotorcycleRentalDto>, MotorcycleRentalDtoValidator>();
         services.AddScoped<IValidator<DriverLicenseDto>, DriverLicenseDtoValidator>();
+        services.AddScoped<IValidator<OrderDto>, OrderDtoValidator>();
+        services.AddScoped<IValidator<UpdateOrderStatusDto>, UpdateOrderStatusDtoValidator>();
+        services.AddScoped<IValidator<PublicOrderIdDto>, PublicOrderIdDtoValidator>();
 
         return services;
     }

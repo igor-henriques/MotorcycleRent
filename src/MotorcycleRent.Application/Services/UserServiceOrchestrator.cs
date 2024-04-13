@@ -101,11 +101,11 @@ public sealed class UserServiceOrchestrator : IUserServiceOrchestrator
         }
         catch (MongoWriteException)
         {
-            _logger.LogError("{ResourceName} caught a duplicate operation while trying to perform a plate updating. Existing plate: {MotorcyclePlate}.",
+            _logger.LogError("{ResourceName} caught a duplicate operation while trying to a delivery partner creation. Existing user: {UserEmail}.",
                 nameof(UserServiceOrchestrator),
                 incomingDeliveryPartnerUser.Email);
 
-            throw new InvalidOperationException("User already exists");
+            throw new InvalidOperationException(Constants.Messages.InvalidUserOperation);
         }
     }
 

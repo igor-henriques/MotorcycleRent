@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "MotorcycleRent - Development": {
+    "MotorcycleRental - Development": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
