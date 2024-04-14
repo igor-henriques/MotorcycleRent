@@ -69,6 +69,8 @@ public sealed class OrderStatusManagementService : IOrderStatusManagementService
         var updatedPartner = deliveryPartner with { IsAvailable = true };
         var updatedOrder = orderBeingUpdated with { Status = EOrderStatus.Delivered };
 
+        updatedPartner.Notifications.RemoveAll(x => x.PublicOrderId == orderBeingUpdated.PublicOrderId);
+
         return (updatedOrder, updatedPartner);
     }
 
@@ -120,13 +122,15 @@ public sealed class OrderStatusManagementService : IOrderStatusManagementService
         if (isDeliveryPartnerWithdrawn)
         {
             deliveryPartner = deliveryPartner with { IsAvailable = true };
+            deliveryPartner.Notifications.RemoveAll(x => x.PublicOrderId == orderBeingUpdated.PublicOrderId);
+
             _logger.LogInformation("Order returning to Available status due to partner withdrawal");
         }
 
         var updatedOrder = orderBeingUpdated with
         {
             Status = incomingStatus,
-            DeliveryPartner = isDeliveryPartnerWithdrawn ? null : deliveryPartner
+            DeliveryPartner = isDeliveryPartnerWithdrawn ? null : deliveryPartner // if an order is being withdrawn, the partner should be removed from the order delivery partner property
         };
 
         return (updatedOrder, deliveryPartner);

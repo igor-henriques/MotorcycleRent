@@ -53,4 +53,40 @@ public sealed class OrderStatusManagementServiceTests
         Assert.Equal(EOrderStatus.Accepted, result.Item1.Status);
         Assert.False(result.Item2.IsAvailable);
     }
+
+    [Fact]
+    public void HandleOrderStatusUpdate_WhenWithdrawal_ShouldRemoveNotificationFromPartner()
+    {
+        // Arrange
+        var order = Order.CreateNewOrder(10, EOrderStatus.Accepted);
+        var deliveryPartner = new DeliveryPartner { IsAvailable = false, HasActiveRental = true };
+        deliveryPartner.Notifications.Add(OrderNotification.BuildFromOrder(order));
+        var incomingStatus = EOrderStatus.Available;
+
+        // Act
+        var result = _service.HandleOrderStatusUpdate(order, deliveryPartner, incomingStatus);
+
+        // Assert
+        Assert.Equal(incomingStatus, result.Item1.Status);
+        Assert.True(result.Item2.IsAvailable);
+        Assert.True(result.Item2.Notifications.Count is 0);
+    }
+
+    [Fact]
+    public void HandleOrderStatusUpdate_WhenDelivered_ShouldRemoveNotificationFromPartner()
+    {
+        // Arrange
+        var order = Order.CreateNewOrder(10, EOrderStatus.Accepted);
+        var deliveryPartner = new DeliveryPartner { IsAvailable = false, HasActiveRental = true };
+        deliveryPartner.Notifications.Add(OrderNotification.BuildFromOrder(order));
+        var incomingStatus = EOrderStatus.Delivered;
+
+        // Act
+        var result = _service.HandleOrderStatusUpdate(order, deliveryPartner, incomingStatus);
+
+        // Assert
+        Assert.Equal(incomingStatus, result.Item1.Status);
+        Assert.True(result.Item2.IsAvailable);
+        Assert.True(result.Item2.Notifications.Count is 0);
+    }
 }
