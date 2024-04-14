@@ -6,7 +6,7 @@ Esta solução gerencia operações relacionadas a usuários, aluguéis de motoc
 
 ## Pré-requisitos
 
-Antes de iniciar, certifique-se de que as seguintes tecnologias estejam instalados/configurados:
+Antes de iniciar, certifique-se de que as seguintes tecnologias estejam instaladas/configuradas:
 
 - .NET 8.0
 - MongoDB
@@ -18,7 +18,7 @@ Antes de iniciar, certifique-se de que as seguintes tecnologias estejam instalad
 
 ### Configuração do Ambiente
 
-Para configurar o ambiente necessário para rodar a API, execute os seguintes comandos:
+Para instalação dos pacotes e build do projeto localmente, execute os seguintes comandos na pasta raiz do projeto:
 
 ```bash
 dotnet restore
@@ -27,7 +27,7 @@ dotnet build
 
 ### Variáveis de Ambiente
 
-Configure as variáveis seguintes variáveis no seu arquivo `secrets.json` para a correta inicialização e operação da API:
+Configure as seguintes variáveis no seu arquivo `secrets.json` para a correta inicialização e operação da API:
 
 ```plaintext
 {
@@ -49,7 +49,7 @@ Configure as variáveis seguintes variáveis no seu arquivo `secrets.json` para 
 
 ## Execução dos Testes
 
-Execute os testes unitários e de integração com o seguinte comando:
+Execute os testes unitários com o seguinte comando:
 
 ```bash
 dotnet test
