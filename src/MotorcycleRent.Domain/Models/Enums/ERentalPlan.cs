@@ -2,7 +2,7 @@
 
 public enum ERentalPlan
 {
-    Weekly,
-    Biweekly,
-    Monthly
+    Weekly = 7,
+    Biweekly = 14,
+    Monthly = 30
 }

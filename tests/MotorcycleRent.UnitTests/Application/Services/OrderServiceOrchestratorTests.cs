@@ -65,7 +65,7 @@ public sealed class OrderServiceOrchestratorTests
         var updateDto = new UpdateOrderStatusDto { PublicOrderId = "12345", Status = EOrderStatus.Accepted };
         var order = Order.CreateNewOrder(10, EOrderStatus.Available);
         var partner = new DeliveryPartner() { HasActiveRental = true };
-        partner.Notifications.Add(order);
+        partner.Notifications.Add(OrderNotification.BuildFromOrder(order));
 
         _orderRepositoryMock.Setup(repo => repo.GetByAsync(It.IsAny<Expression<Func<Order, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(order);

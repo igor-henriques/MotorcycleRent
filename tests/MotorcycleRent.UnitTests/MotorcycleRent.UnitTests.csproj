@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\MotorcycleRent.Api\MotorcycleRent\MotorcycleRent.Api.csproj" />
+		<ProjectReference Include="..\..\src\MotorcycleRent.Api\MotorcycleRent.Api.csproj" />
 		<ProjectReference Include="..\..\src\MotorcycleRent.Domain\MotorcycleRent.Domain.csproj" />
 		<ProjectReference Include="..\..\src\MotorcycleRent.Infrastructure\MotorcycleRent.Infrastructure.csproj" />
 	</ItemGroup>

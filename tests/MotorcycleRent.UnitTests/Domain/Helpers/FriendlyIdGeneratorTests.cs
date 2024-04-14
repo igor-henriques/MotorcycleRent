@@ -5,7 +5,7 @@ public sealed class FriendlyIdGeneratorTests
     [Fact]
     public void CreateFriendlyId_WithSpecificGuid_ReturnsConsistentId()
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 1000; i++)
         {
             var specificGuid = Guid.NewGuid();
 
@@ -26,5 +26,13 @@ public sealed class FriendlyIdGeneratorTests
 
         Assert.Equal(id1.Length, id2.Length);
         Assert.Equal(id2.Length, id3.Length);
+    }
+
+    [Fact]
+    public void CreateFriendlyId_GeneratesUniformLengthIds_ForSpecificGuid()
+    {
+        var guid = Guid.Parse("0ad9a815-4728-4fe0-aebb-67d4b1734f16");
+        var id = FriendlyIdGenerator.CreateFriendlyId(guid);
+        Assert.DoesNotContain("0000", id);
     }
 }

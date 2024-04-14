@@ -15,6 +15,12 @@ public sealed class HttpLoggingDetailsMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Request.Path.Value?.Contains("swagger") ?? false)
+        {
+            await _next(context);
+            return;
+        }
+
         context.Request.EnableBuffering();
 
         var originalResponseBody = context.Response.Body;

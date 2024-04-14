@@ -4,7 +4,7 @@ public sealed class UpdateOrderStatusDtoValidator : AbstractValidator<UpdateOrde
 {
     public UpdateOrderStatusDtoValidator()
     {
-        RuleFor(x => x.PublicOrderId)
+        RuleFor(x => new PublicOrderIdDto() { PublicOrderId = x.PublicOrderId })
             .SetValidator(new PublicOrderIdDtoValidator()!);
     }
 }

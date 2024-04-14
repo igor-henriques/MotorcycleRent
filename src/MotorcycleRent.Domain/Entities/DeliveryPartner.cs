@@ -6,7 +6,7 @@ public sealed record DeliveryPartner : User
     public string? NationalId { get; init; }
     public DateTime BirthDate { get; init; }
     public DriverLicense? DriverLicense { get; init; }
-    public List<Order> Notifications { get; init; } = [];
+    public List<OrderNotification> Notifications { get; init; } = [];
     public bool HasActiveRental { get; init; }
     public bool IsAvailable { get; init; }
 

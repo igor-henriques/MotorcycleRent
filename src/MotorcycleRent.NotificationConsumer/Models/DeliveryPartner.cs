@@ -6,7 +6,7 @@ internal sealed record DeliveryPartner : BaseEntity
     public string? Email { get; init; }
     public string? FullName { get; init; }
     public DriverLicense? DriverLicense { get; init; }
-    public List<Order> Notifications { get; init; } = [];
+    public List<OrderNotification> Notifications { get; init; } = [];
     public bool HasActiveRental { get; init; }
     public bool IsAvailable { get; init; }
 

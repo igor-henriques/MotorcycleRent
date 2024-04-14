@@ -61,7 +61,7 @@ public sealed class OrderTests
         // Arrange        
         var order = Order.CreateNewOrder(1, EOrderStatus.Available);
         var partner = new DeliveryPartner() { IsAvailable = true, HasActiveRental = true };
-        partner.Notifications.Add(order);
+        partner.Notifications.Add(OrderNotification.BuildFromOrder(order));
 
         // Act
         bool result = order.CanBeAccepted(partner);
@@ -76,7 +76,7 @@ public sealed class OrderTests
         // Arrange        
         var order = Order.CreateNewOrder(1, EOrderStatus.Available);
         var partner = new DeliveryPartner() { IsAvailable = true, HasActiveRental = false };
-        partner.Notifications.Add(order);
+        partner.Notifications.Add(OrderNotification.BuildFromOrder(order));
 
         // Act
         bool result = order.CanBeAccepted(partner);
@@ -91,7 +91,7 @@ public sealed class OrderTests
         // Arrange        
         var order = Order.CreateNewOrder(1, EOrderStatus.Available);
         var partner = new DeliveryPartner() { IsAvailable = false, HasActiveRental = true };
-        partner.Notifications.Add(order);
+        partner.Notifications.Add(OrderNotification.BuildFromOrder(order));
 
         // Act
         bool result = order.CanBeAccepted(partner);

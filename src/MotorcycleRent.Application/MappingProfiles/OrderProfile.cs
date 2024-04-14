@@ -5,5 +5,6 @@ public sealed class OrderProfile : Profile
     public OrderProfile()
     {
         CreateMap<Order, OrderDto>();
+        CreateMap<Order, OrderNotification>();
     }
 }

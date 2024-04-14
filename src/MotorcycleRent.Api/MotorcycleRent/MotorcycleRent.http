@@ -1,6 +1,0 @@
-@MotorcycleRental_HostAddress = https://localhost:7188
-
-GET {{MotorcycleRental_HostAddress}}/user/authenticate
-Accept: application/json
-
-###

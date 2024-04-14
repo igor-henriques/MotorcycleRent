@@ -12,32 +12,28 @@ public static class FriendlyIdGenerator
     public static string CreateFriendlyId(Guid guid)
     {
         var bytes = guid.ToByteArray();
-        return ToBase62String(bytes);
+        Array.Reverse(bytes);
+        var number = new BigInteger(bytes.Concat(new byte[] { 0 }).ToArray()); 
+
+        return ToBase62String(number);
     }
 
-    private static string ToBase62String(byte[] bytes)
+    private static string ToBase62String(BigInteger number)
     {
-        StringBuilder stringBuilder = new();
-        var number = new BigInteger(bytes);
-
-        // Ensure positive number for BigInteger by adding an extra zero byte if needed
-        if (bytes[0] > 0x7f)
-        {
-            number = new BigInteger(bytes.Concat(new byte[] { 0 }).ToArray());
-        }
+        var stringBuilder = new StringBuilder();
 
         // Convert to Base62
-        while (number > 0)
+        do // Use do-while to handle the case when number is 0
         {
             var remainder = number % 62;
             stringBuilder.Insert(0, Base62Chars[(int)remainder]);
             number /= 62;
-        }
+        } while (number > 0);
 
         // Padding to ensure uniform length
         while (stringBuilder.Length < BASE32_LENGTH)
         {
-            stringBuilder.Insert(0, '0');
+            stringBuilder.Insert(0, Base62Chars[0]);
         }
 
         List<string> idChunks = stringBuilder

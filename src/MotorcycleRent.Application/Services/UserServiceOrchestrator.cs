@@ -83,11 +83,13 @@ public sealed class UserServiceOrchestrator : IUserServiceOrchestrator
         {
             User? createdDeliveryPartner = await _userRepository.CreateAsync(incomingDeliveryPartnerUser with
             {
-                Claims = [
+                Claims = 
+                [
                     new Claim(ClaimTypes.Role, nameof(DeliveryPartner)),
-                new Claim(ClaimTypes.Email, deliveryPartnerDto.Email!)
+                    new Claim(ClaimTypes.Email, deliveryPartnerDto.Email!)
                 ],
-                HashedPassword = _passwordHashingService.HashPassword(deliveryPartnerDto.Password)
+                HashedPassword = _passwordHashingService.HashPassword(deliveryPartnerDto.Password),
+                IsAvailable = true
             }, cancellationToken);
 
             if (createdDeliveryPartner is null)
@@ -96,8 +98,8 @@ public sealed class UserServiceOrchestrator : IUserServiceOrchestrator
             }
 
             _logger.LogInformation("{ResourceName} created a new delivery partner user: {UserEmail}",
-            nameof(UserServiceOrchestrator),
-            createdDeliveryPartner.Email);
+                nameof(UserServiceOrchestrator),
+                createdDeliveryPartner.Email);
         }
         catch (MongoWriteException)
         {

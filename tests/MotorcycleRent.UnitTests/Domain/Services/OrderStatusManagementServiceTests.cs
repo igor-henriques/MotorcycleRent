@@ -43,7 +43,7 @@ public sealed class OrderStatusManagementServiceTests
         // Arrange
         var order = Order.CreateNewOrder(10, EOrderStatus.Available);
         var deliveryPartner = new DeliveryPartner { IsAvailable = true, HasActiveRental = true };
-        deliveryPartner.Notifications.Add(order);
+        deliveryPartner.Notifications.Add(OrderNotification.BuildFromOrder(order));
         var incomingStatus = EOrderStatus.Accepted;
 
         // Act

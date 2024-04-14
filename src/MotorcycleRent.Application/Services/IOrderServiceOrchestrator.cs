@@ -26,7 +26,7 @@ public interface IOrderServiceOrchestrator
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation, containing the availability status as a boolean.</returns>
     /// <exception cref="OrderUnavailableException">Thrown when the order is not available for delivery.</exception>
-    Task<bool> CheckOrderAvailabilityAsync(PublicOrderIdDto? publicOrderId, CancellationToken cancellationToken = default);
+    Task<bool> CheckOrderAvailabilityAsync(PublicOrderIdDto publicOrderId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates the status of an order asynchronously.

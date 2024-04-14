@@ -74,9 +74,9 @@ public sealed class OrderServiceOrchestrator : IOrderServiceOrchestrator
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation, containing the availability status as a boolean.</returns>
     /// <exception cref="OrderUnavailableException">Thrown when the order is not available for delivery.</exception>
-    public async Task<bool> CheckOrderAvailabilityAsync(PublicOrderIdDto? publicOrderId, CancellationToken cancellationToken = default)
+    public async Task<bool> CheckOrderAvailabilityAsync(PublicOrderIdDto publicOrderId, CancellationToken cancellationToken = default)
     {
-        var order = await _orderRepository.GetByAsync(o => o.PublicOrderId! == publicOrderId, cancellationToken);
+        var order = await _orderRepository.GetByAsync(o => o.PublicOrderId! == publicOrderId!.PublicOrderId, cancellationToken);
 
         if (order is null || !order.IsOrderAvailableToDelivery)
         {
@@ -130,7 +130,7 @@ public sealed class OrderServiceOrchestrator : IOrderServiceOrchestrator
     /// <exception cref="InvalidOperationException">Thrown when the order does not exist.</exception>
     public async Task<IEnumerable<DeliveryPartnerDto>> GetNotifiedPartnersAsync(PublicOrderIdDto publicOrderId, CancellationToken cancellationToken = default)
     {
-        var order = await _orderRepository.GetByAsync(o => o.PublicOrderId! == publicOrderId, cancellationToken)
+        var order = await _orderRepository.GetByAsync(o => o.PublicOrderId! == publicOrderId.PublicOrderId, cancellationToken)
             ?? throw new InvalidOperationException(Constants.Messages.InvalidOrder);
 
         var partners = await _deliveryPartnerRepository.GetAllByAsync(d => order.NotifiedPartnersEmails.Contains(d.Email!), cancellationToken);

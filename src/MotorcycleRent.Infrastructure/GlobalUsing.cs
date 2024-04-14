@@ -21,4 +21,6 @@ global using System.Linq.Expressions;
 global using System.Security.Claims;
 global using System.Text;
 global using Azure.Messaging.ServiceBus;
+global using Bogus;
+global using MotorcycleRent.Domain.Helpers;
 global using InvalidOperationException = MotorcycleRent.Domain.Exceptions.InvalidOperationException;

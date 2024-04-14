@@ -60,7 +60,7 @@ public sealed class OrderStatusManagementService : IOrderStatusManagementService
             return (orderBeingUpdated, deliveryPartner);
         }
 
-        if (orderBeingUpdated.CanBeDelivered(deliveryPartner))
+        if (!orderBeingUpdated.CanBeDelivered(deliveryPartner))
         {
             _logger.LogInformation("Mismatch between order and delivery partner state machine");
             throw new InvalidOperationException(Constants.Messages.ForbiddenOrderUpdate);

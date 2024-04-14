@@ -5,7 +5,7 @@ internal sealed class OrderNotificationWorker : BackgroundService
     private readonly IBaseRepository<Order> _orderRepository;
     private readonly IBaseRepository<DeliveryPartner> _partnerRepository;
     private readonly ILogger<OrderNotificationWorker> _logger;
-    private readonly ConsumerOptions _options;
+    private readonly ConsumerOptions _options;    
 
     private CancellationTokenSource? _consumerCts;
     private ServiceBusClient? _client;
@@ -122,7 +122,7 @@ internal sealed class OrderNotificationWorker : BackgroundService
     {
         try
         {
-            partner.Notifications.Add(order);
+            partner.Notifications.Add(OrderNotification.BuildFromOrder(order));
 
             var filterBuilder = Builders<DeliveryPartner>.Filter.Eq(d => d.Email, partner.Email);
             var updateBuilder = Builders<DeliveryPartner>.Update.Set(d => d.Notifications, partner.Notifications);

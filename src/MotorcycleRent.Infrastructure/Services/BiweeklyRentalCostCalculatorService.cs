@@ -2,7 +2,7 @@
 
 public sealed class BiweeklyRentalCostCalculatorService : BaseRentalCostCalculatorService, IRentalCostCalculatorService
 {
-    public override int RentPeriodDays => 14;
+    public override int RentPeriodDays => (int)ERentalPlan.Biweekly;
 
     public BiweeklyRentalCostCalculatorService(IOptions<RentalOptions> options) : base(options) { }
 

@@ -12,6 +12,7 @@ Antes de iniciar, certifique-se de que as seguintes tecnologias estejam instalad
 - MongoDB
 - Azure Service Bus
 - Azure Blob Storage
+- Docker
 
 ## Configuração
 

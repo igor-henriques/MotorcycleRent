@@ -35,6 +35,7 @@ try
 
     if (app.Environment.IsDevelopment())
     {
+        app.UseStaticFiles();
         app.UseSwagger();
         app.UseSwaggerUI();
     }

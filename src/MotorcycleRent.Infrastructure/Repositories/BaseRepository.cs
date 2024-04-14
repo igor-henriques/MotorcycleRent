@@ -75,4 +75,9 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     {
         return await _collection.Find(filterDefinition).ToListAsync(cancellationToken);
     }
+
+    public async Task CreateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    {
+        await _collection.InsertManyAsync(entities, cancellationToken: cancellationToken);
+    }
 }
