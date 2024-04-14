@@ -9,7 +9,7 @@ public abstract class BaseRentalCostCalculatorService
     /// Gets the number of days in the rent period used for calculating base rent cost.
     /// This value is specific to the implementing subclass.
     /// </summary>
-    public abstract int RentPeriodDays { get; }
+    public abstract int ExpectedRentalPeriodDays { get; }
     private readonly RentalOptions _options;
 
     /// <summary>
@@ -51,8 +51,8 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns></returns>
     private int GetPlanRenovations(decimal days)
     {
-        var planRenovations = (int)Math.Floor(days / RentPeriodDays);
-        return planRenovations is 0 ? 1 : planRenovations;
+        var planRenovations = (int)Math.Floor(days / ExpectedRentalPeriodDays);
+        return Math.Max(1, planRenovations);            
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns>The late return fee amount.</returns>
     private decimal GetBaseCost(decimal dailyCost, int planRenovations)
     {
-        return Math.Round(planRenovations * RentPeriodDays * dailyCost, 2);
+        return Math.Round(planRenovations * ExpectedRentalPeriodDays * dailyCost, 2);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns>The late return fee amount.</returns>
     private decimal GetLateReturnFee(MotorcycleRental MotorcycleRental, int planRenovations)
     {
-        var expectedReturnDate = MotorcycleRental.RentalPeriod.Start.AddDays(RentPeriodDays * planRenovations);
+        var expectedReturnDate = MotorcycleRental.RentalPeriod.Start.AddDays(ExpectedRentalPeriodDays * planRenovations);
         var actualReturnDate = MotorcycleRental.RentalPeriod.End;
         var lateDays = Math.Max(0, Math.Round((actualReturnDate - expectedReturnDate).TotalDays));
 
@@ -89,7 +89,7 @@ public abstract class BaseRentalCostCalculatorService
     /// <returns>The early return fee amount.</returns>
     private decimal GetEarlyReturnFee(MotorcycleRental motorcycleRental, int planRenovations)
     {
-        var expectedReturnDate = motorcycleRental.RentalPeriod.Start.AddDays(RentPeriodDays * planRenovations);
+        var expectedReturnDate = motorcycleRental.RentalPeriod.Start.AddDays(ExpectedRentalPeriodDays * planRenovations);
         var actualReturnDate = motorcycleRental.RentalPeriod.End;
 
         decimal days = Math.Max(0, (decimal)Math.Round((expectedReturnDate - actualReturnDate).TotalDays));

@@ -103,7 +103,7 @@ public sealed class MotorcycleServiceOrchestrator : IMotorcycleServiceOrchestrat
                 filteredMotorcycles.Count());
 
         return filteredMotorcycles.Select(_mapper.Map<MotorcycleDto>);
-    }
+    }    
 
     /// <summary>
     /// Updates the plate number of an existing motorcycle.

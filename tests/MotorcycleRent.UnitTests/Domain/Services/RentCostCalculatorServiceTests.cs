@@ -36,7 +36,7 @@ public sealed class RentCostCalculatorServiceTests
         var MotorcycleRental = new MotorcycleRental()
         {
             RentalPeriod = new DateTimeRange(
-                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.ExpectedRentalPeriodDays * -1) + earlyReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
         };
@@ -57,7 +57,7 @@ public sealed class RentCostCalculatorServiceTests
         var motorcycleRental = new MotorcycleRental()
         {
             RentalPeriod = new DateTimeRange(
-                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) - lateReturnDaysCount),
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.ExpectedRentalPeriodDays * -1) - lateReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
         };
@@ -78,7 +78,7 @@ public sealed class RentCostCalculatorServiceTests
         var motorcycleRental = new MotorcycleRental()
         {
             RentalPeriod = new DateTimeRange(
-                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) + earlyReturnDaysCount),
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.ExpectedRentalPeriodDays * -1) + earlyReturnDaysCount),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
         };
@@ -98,7 +98,7 @@ public sealed class RentCostCalculatorServiceTests
         var motorcycleRental = new MotorcycleRental()
         {
             RentalPeriod = new DateTimeRange(
-                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.RentPeriodDays * -1) * 2),
+                DateTime.UtcNow.AddDays((_weeklyRentCostCalculatorService.ExpectedRentalPeriodDays * -1) * 2),
                 DateTime.UtcNow),
             RentalPlan = ERentalPlan.Weekly
         };        

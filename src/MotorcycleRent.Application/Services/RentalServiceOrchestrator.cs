@@ -56,7 +56,7 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
             selectedMotorcycle.Plate,
             deliveryPartner.NationalId);
 
-        MotorcycleRental incomingRent = BuildCalculatedIncomingRent(MotorcycleRentalDto) with
+        MotorcycleRental incomingRent = BuildCalculatedIncomingRental(MotorcycleRentalDto) with
         {
             Motorcycle = selectedMotorcycle,
             DeliveryPartner = deliveryPartner,
@@ -65,7 +65,7 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
 
         var rentMotorcycleTask = _rentalRepository.CreateAsync(incomingRent, cancellationToken);
         var updateMotorcycleStatusTask = UpdateSelectedMotorcycleStatus(selectedMotorcycle, cancellationToken);
-        var partnerUpdateTask = _partnerRepository.UpdateAsync(deliveryPartner with { HasActiveRental = true }, cancellationToken);
+        var partnerUpdateTask = _partnerRepository.UpdateAsync(deliveryPartner with { HasActiveRental = true, IsAvailable = true }, cancellationToken);
 
         await Task.WhenAll(rentMotorcycleTask, updateMotorcycleStatusTask, partnerUpdateTask);
 
@@ -101,9 +101,9 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
     /// </summary>
     /// <param name="MotorcycleRentalDto">The motorcycle rent DTO to build the rent entity from.</param>
     /// <returns>The built and cost-calculated rent entity.</returns>
-    private MotorcycleRental BuildCalculatedIncomingRent(MotorcycleRentalDto motorcycleRentalDto)
+    private MotorcycleRental BuildCalculatedIncomingRental(MotorcycleRentalDto motorcycleRentalDto)
     {
-        var incomingRent = _mapper.Map<MotorcycleRental>(motorcycleRentalDto);
+        var incomingRental = _mapper.Map<MotorcycleRental>(motorcycleRentalDto);
         var calculatorService = _rentalCostCalculatorServices.FirstOrDefault(c => c.CanCalculate(motorcycleRentalDto.RentalPlan));
 
         if (calculatorService is null)
@@ -114,9 +114,9 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
             throw new InternalErrorException(Constants.Messages.CalculatorServiceNotFound);
         }
 
-        var calculatedIncomingRent = calculatorService.CalculateRentalCost(incomingRent);
+        var calculatedIncomingRental = calculatorService.CalculateRentalCost(incomingRental);
 
-        return calculatedIncomingRent;
+        return calculatedIncomingRental;
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public sealed class RentalServiceOrchestrator : IRentalServiceOrchestrator
 
         var rentUpdateTask = _rentalRepository.UpdateAsync(onGoingRent with { Status = ERentStatus.Finished }, cancellationToken);
         var motorcycleUpdateTask = _motorcycleServiceOrchestrator.UpdateMotorcycleStatusAsync(updateMotorcycleDto, cancellationToken);
-        var partnerUpdateTask = _partnerRepository.UpdateAsync(deliveryPartner with { HasActiveRental = false }, cancellationToken);
+        var partnerUpdateTask = _partnerRepository.UpdateAsync(deliveryPartner with { HasActiveRental = false, IsAvailable = false }, cancellationToken);
 
         await Task.WhenAll(rentUpdateTask, motorcycleUpdateTask, partnerUpdateTask);
     }

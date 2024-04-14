@@ -6,7 +6,7 @@ public interface IRentalCostCalculatorService
     /// Gets the number of days in the rent period used for calculating base rent cost.
     /// This value is specific to the implementing subclass.
     /// </summary>
-    int RentPeriodDays { get; }
+    int ExpectedRentalPeriodDays { get; }
 
     /// <summary>
     /// Checks whether the class can calculate the rent cost for the specified rental plan.
