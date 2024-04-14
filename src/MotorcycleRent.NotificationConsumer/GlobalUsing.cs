@@ -13,3 +13,4 @@ global using Microsoft.Extensions.Options;
 global using MotorcycleRent.NotificationConsumer.Data;
 global using Azure.Messaging.ServiceBus;
 global using System.Text.Json;
+global using Serilog;

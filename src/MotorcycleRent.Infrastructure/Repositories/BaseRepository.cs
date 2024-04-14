@@ -1,4 +1,6 @@
-﻿namespace MotorcycleRent.Infrastructure.Repositories;
+﻿using MongoDB.Bson.Serialization;
+
+namespace MotorcycleRent.Infrastructure.Repositories;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
 {
@@ -8,8 +10,13 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         MongoClient client,
         IOptions<DatabaseOptions> options)
     {
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Administrator)))
+        {
+            BsonClassMap.RegisterClassMap<Administrator>();
+        }        
+
         _collection = client.GetDatabase(options.Value.DatabaseName)
-            .GetCollection<TEntity>(options.Value.GetCollectionName<TEntity>());
+            .GetCollection<TEntity>(options.Value.GetCollectionName<TEntity>());        
     }
 
     public async Task CreateIndexAsync(CreateIndexModel<TEntity> indexModel, CancellationToken cancellationToken = default)

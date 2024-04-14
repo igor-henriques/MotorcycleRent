@@ -1,6 +1,4 @@
-﻿using Serilog;
-
-namespace MotorcycleRent.NotificationConsumer.Injectors;
+﻿namespace MotorcycleRent.NotificationConsumer.Injectors;
 
 internal static class StartupInjector
 {
@@ -9,10 +7,10 @@ internal static class StartupInjector
         builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.AddCommandLine(args));
 
         builder.ConfigureAppConfiguration((hostingContext, config) =>
-        {            
-            config.AddEnvironmentVariables();
+        {                        
             config.SetBasePath(Directory.GetCurrentDirectory());
             config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            config.AddEnvironmentVariables();
             config.AddUserSecrets<Program>();
         });
 

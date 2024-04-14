@@ -13,6 +13,7 @@ services:
       - StoragingOptions__ConnectionString=
       - StoragingOptions__ContainerName=
       - PublisherOptions__ConnectionString=
+      - ASPNETCORE_ENVIRONMENT=Development
 
   notification-consumer:
     build:
@@ -20,4 +21,4 @@ services:
       dockerfile: src/MotorcycleRent.NotificationConsumer/Dockerfile
     environment:
       - DatabaseOptions__ConnectionString=
-      - ConsumerOptions__ConnectionString=
+      - ConsumerOptions__ConnectionString=Endpoint=
