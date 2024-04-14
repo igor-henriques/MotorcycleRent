@@ -1,5 +1,5 @@
 ﻿namespace MotorcycleRent.Application.Services;
-                                       
+
 /// <summary>
 /// Manages updates to order statuses in coordination with delivery partners.
 /// </summary>
@@ -119,6 +119,7 @@ public sealed class OrderStatusManagementService : IOrderStatusManagementService
 
         if (isDeliveryPartnerWithdrawn)
         {
+            deliveryPartner = deliveryPartner with { IsAvailable = true };
             _logger.LogInformation("Order returning to Available status due to partner withdrawal");
         }
 
