@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MotorcycleRent.NotificationConsumer": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

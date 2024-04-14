@@ -7,11 +7,14 @@
 		<Nullable>enable</Nullable>
 		<NoWarn>IDE0290</NoWarn>
 		<UserSecretsId>cd583fe2-7a18-4ffd-b8ca-aaa4c621f93b</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.5" />
 	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
 	  <PackageReference Include="MongoDB.Bson" Version="2.24.0" />
 	  <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
 	  <PackageReference Include="serilog.aspnetcore" Version="8.0.1" />

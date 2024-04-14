@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/MotorcycleRent.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DatabaseOptions__ConnectionString=
+      - JwtAuthenticationOptions__Key=
+      - StoragingOptions__ConnectionString=
+      - StoragingOptions__ContainerName=
+      - PublisherOptions__ConnectionString=
+
+  notification-consumer:
+    build:
+      context: .
+      dockerfile: src/MotorcycleRent.NotificationConsumer/Dockerfile
+    environment:
+      - DatabaseOptions__ConnectionString=
+      - ConsumerOptions__ConnectionString=

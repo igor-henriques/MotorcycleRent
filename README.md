@@ -35,7 +35,7 @@ Configure as variáveis seguintes variáveis no seu arquivo `secrets.json` para 
     "ConnectionString": "[mongo db connection string]"
   },
   "JwtAuthenticationOptions": {
-    "Key": "[some 256bit string here]"
+    "Key": "[código 256bit aqui]"
   },
   "StoragingOptions": {
     "ConnectionString": "azure blob storage connection string",
@@ -54,6 +54,30 @@ Execute os testes unitários e de integração com o seguinte comando:
 ```bash
 dotnet test
 ```
+
+## Executando via Docker
+Após realizar o clone do projeto, revise e execute os seguintes comandos a partir da pasta raiz (a pasta em que se encontra o arquivo de solução **.sln**) do projeto para executar a API:
+```bash
+docker build -f src/MotorcycleRent.Api/Dockerfile -t motorcyclerent-api .
+```
+As seguintes variáveis de ambiente são esperadas pela imagem quando for inicializada (complete após o '='):
+```
+-e 'DatabaseOptions__ConnectionString='
+-e 'JwtAuthenticationOptions__Key='
+-e 'StoragingOptions__ConnectionString='
+-e 'StoragingOptions__ContainerName='
+-e 'PublisherOptions__ConnectionString='
+```
+Para o Consumer, execute a seguinte:
+```bash
+docker build -f src/MotorcycleRent.NotificationConsumer/Dockerfile -t motorcyclerent-consumer .
+```
+As seguintes variáveis de ambiente são esperadas pela imagem quando for inicializada (complete após o '='):
+```
+-e 'DatabaseOptions__ConnectionString='
+-e 'ConsumerOptions__ConnectionString='
+```
+Como opcional, utilize o **docker-compose.yaml** para orquestrar ambos containers, lembrando sempre de preencher as variáveis de ambiente corretamente.
 
 # <br>Endpoints de Usuários
 
