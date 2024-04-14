@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MotorcycleRent.Domain.Exceptions;
 
 namespace MotorcycleRent.Api.Middlewares;
 
@@ -14,7 +15,7 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is DomainException)
+        if (exception is DomainException or ValidationException)
         {            
             _logger.LogError(InternalServerErrorMessage, exception.Message);
         }
