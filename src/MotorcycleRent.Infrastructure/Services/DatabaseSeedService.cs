@@ -65,34 +65,26 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
         string hashedPassword = passwordHashingService.HashPassword(_options.DeliveryPartnerSeedUser!.Password);
 
         var partnerRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<DeliveryPartner>>();
-        var motorcycleRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Motorcycle>>();
         var rentalRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<MotorcycleRental>>();
         var orderRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Order>>();
         var calculatorServices = scope.ServiceProvider.GetRequiredService<IEnumerable<IRentalCostCalculatorService>>();
 
         using var progressBar = new ProgressBarService(_logger);
 
-        var partners = BuildDeliveryPartnerGenerator(hashedPassword).Generate(1000);                
+        List<Motorcycle> motorcycles = await GenerateMotorcycles(scope, progressBar, _logger);
 
-        var motorcycles = BuildMotorcycleGenerator().Generate(1000).DistinctBy(m => m.Plate).ToList();
-        await motorcycleRepository.CreateManyAsync(motorcycles);
+        var partners = BuildDeliveryPartnerGenerator(hashedPassword).Generate(1000);
 
-        progressBar.Report(.25);
+        await GenerateRentals(rentalRepository, calculatorServices, progressBar, motorcycles, partners);
+        await GenerateOrders(partnerRepository, orderRepository, progressBar, partners);        
+    }
 
-        _logger.LogInformation("{MotorcycleCount}x motorcycles successfully added to the database through {ServiceName}",
-            motorcycles.Count,
-            nameof(DatabaseSeedService));
-
-        var rentals = BuildRentalGenerator(motorcycles, partners, calculatorServices).Generate(1000);
-        await rentalRepository.CreateManyAsync(rentals);
-
-        progressBar.Report(.50);
-
-        _logger.LogInformation("{MotorcycleRentalCount}x rentals successfully added to the database through {ServiceName}",
-            rentals.Count,
-            nameof(DatabaseSeedService));
-
-        var orders = BuildAvailableOrderGenerator().Generate(1000);        
+    private async Task GenerateOrders(IBaseRepository<DeliveryPartner> partnerRepository, IBaseRepository<Order> orderRepository, ProgressBarService progressBar, List<DeliveryPartner> partners)
+    {
+        var orders = BuildAvailableOrderGenerator()
+            .Generate(1000)
+            .DistinctBy(x => x.PublicOrderId)
+            .ToList();
 
         foreach (var order in orders)
         {
@@ -105,7 +97,7 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
 
             order.NotifiedPartnersEmails.AddRange(partnersAbleToBeNotified.Select(p => p.Email).ToList()!);
         }
-        
+
         await partnerRepository.CreateManyAsync(partners);
 
         progressBar.Report(.75);
@@ -130,6 +122,42 @@ public sealed class DatabaseSeedService : IDatabaseSeedService
             nameof(DatabaseSeedService));
     }
 
+    private async Task GenerateRentals(IBaseRepository<MotorcycleRental> rentalRepository, IEnumerable<IRentalCostCalculatorService> calculatorServices, ProgressBarService progressBar, List<Motorcycle> motorcycles, List<DeliveryPartner> partners)
+    {
+        var rentals = BuildRentalGenerator(motorcycles, partners, calculatorServices).Generate(1000);
+        await rentalRepository.CreateManyAsync(rentals);
+
+        progressBar.Report(.50);
+
+        _logger.LogInformation("{MotorcycleRentalCount}x rentals successfully added to the database through {ServiceName}",
+            rentals.Count,
+            nameof(DatabaseSeedService));
+    }
+    private static async Task<List<Motorcycle>> GenerateMotorcycles(IServiceScope scope, ProgressBarService progressBar, ILogger<DatabaseSeedService> logger)
+    {
+        var motorcycleRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Motorcycle>>();
+        var motorcycles = BuildMotorcycleGenerator()
+            .Generate(1000)
+            .DistinctBy(m => m.Plate)
+            .ToList();
+
+        // Create an index with the plate identification to ensure uniqueness.
+        // Only creates the index case it don't exist.                                                                   
+        await motorcycleRepository.CreateIndexAsync(
+            new CreateIndexModel<Motorcycle>(
+                Builders<Motorcycle>.IndexKeys.Descending(d => d.Plate),
+                new CreateIndexOptions { Unique = true, Name = "UniquePlateConstraint" }));
+
+        await motorcycleRepository.CreateManyAsync(motorcycles);
+
+        progressBar.Report(.25);
+
+        logger.LogInformation("{MotorcycleCount}x motorcycles successfully added to the database through {ServiceName}",
+            motorcycles.Count,
+            nameof(DatabaseSeedService));
+
+        return motorcycles;
+    }
     private static Faker<DeliveryPartner> BuildDeliveryPartnerGenerator(string hashedPassword)
     {
         return new Faker<DeliveryPartner>()
