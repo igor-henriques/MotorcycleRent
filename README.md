@@ -4,6 +4,9 @@
 
 Esta solução gerencia operações relacionadas a usuários, aluguéis de motocicletas e pedidos. Projetada para sistemas que necessitam de gerenciamento eficiente de entregas e aluguéis, este conjunto de ferramentas facilita o controle e a administração através de interfaces de código limpas e métodos bem definidos.
 
+**Fun fact**: Foram consumidas 42 horas para a finalização do projeto:<br><br>
+![wakatime](https://i.imgur.com/weFL9V2.png)
+
 ## Pré-requisitos
 
 Antes de iniciar, certifique-se de que as seguintes tecnologias estejam instaladas/configuradas:
